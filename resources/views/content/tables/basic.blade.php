@@ -1,0 +1,3 @@
+@extends('layouts/contentNavbarLayout')
+
+<h1>HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO</h1>

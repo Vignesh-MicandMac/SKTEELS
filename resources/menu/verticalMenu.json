@@ -1,0 +1,389 @@
+{
+  "menu": [
+    {
+      "url": "/dashboard",
+      "name": "Dashboard",
+      "icon": "menu-icon tf-icons mdi mdi-home-outline",
+      "slug": "dashboard"
+    },
+    {
+      "name": "Masters",
+      "icon": "menu-icon tf-icons mdi mdi-account-outline",
+      "slug": "masters",
+      "submenu": [
+        {
+          "url": "masters/dealers",
+          "name": "Dealers",
+          "slug": "masters.dealers.index"
+        },
+        {
+          "url": "masters/executives",
+          "name": "Executives",
+          "slug": "masters.executives.index"
+        },
+        {
+          "url": "masters/executive-mapping",
+          "name": "Executive Mapping",
+          "slug": "masters.executive.mapping.index"
+        },
+        {
+          "url": "masters/product-upload",
+          "name": "Product Upload",
+          "slug": "masters.products.index"
+        },
+        {
+          "url": "masters/promotors_type",
+          "name": "Promotors Type",
+          "slug": "masters.pro_type.index"
+        },
+        {
+          "url": "masters/promotors",
+          "name": "Promotors",
+          "slug": "masters.promotors.index"
+        },
+        {
+          "url": "masters/brands",
+          "name": "Brands",
+          "slug": "masters.brands.index"
+        }
+      ]
+    },
+    {
+      "name": "Activity",
+      "icon": "menu-icon tf-icons mdi mdi-cube-outline",
+      "slug": "activity",
+      "submenu": [
+        {
+          "url": "activity/points",
+          "name": "Stock Points",
+          "slug": "activity.points.index"
+        },
+        {
+          "url": "activity/stocks/add-stocks",
+          "name": "Add Stock",
+          "slug": "activity.stocks.index"
+        },
+        {
+          "url": "activity/edit-stock",
+          "name": "Edit-Stock",
+          "slug": "activity.edit-stock"
+        },
+        {
+          "url": "activity/stocks/closing-stock",
+          "name": "Closing Stock Update",
+          "slug": "activity.stocks.closing_stock_index"
+        },
+        {
+          "url": "activity/stocks/sale-entry",
+          "name": "Sale Entry Approval",
+          "slug": "activity.stocks.sale_entry"
+        },
+        {
+          "url": "activity/stocks/promotors-approval",
+          "name": "Promotors Approval",
+          "slug": "activity.stocks.promotors_approval"
+        },
+        {
+          "url": "activity/Redeem-approval",
+          "name": "Redeem Approval",
+          "slug": "activity.redeem-approval"
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "icon": "menu-icon tf-icons mdi mdi-account-key",
+      "slug": "users",
+      "submenu": [
+        {
+          "url": "users/role",
+          "name": "Roles",
+          "slug": "users.role.index"
+        },
+        {
+          "url": "user",
+          "name": "User",
+          "slug": "users.index"
+        },
+        {
+          "url": "users/permissions",
+          "name": "User Role Permission",
+          "slug": "users.permissions.index"
+        }
+      ]
+    },
+    {
+      "name": "Report",
+      "icon": "menu-icon tf-icons mdi mdi-form-select",
+      "slug": "report",
+      "submenu": [
+        {
+          "url": "report/redeem-list",
+          "name": "Redeem List",
+          "slug": "report.redeem-list"
+        },
+        {
+          "url": "report/executive-site-visit",
+          "name": "Executive Site Visit",
+          "slug": "report.executive-site-visit"
+        },
+        {
+          "url": "report/stock-management",
+          "name": "Stock Management",
+          "slug": "report.stock-management"
+        },
+        {
+          "url": "report/received-product-list",
+          "name": "Recived Product List",
+          "slug": "report.received-product-list"
+        }
+      ]
+    },
+    {
+      "menuHeader": "Apps & Pages"
+    },
+    {
+      "name": "Account Settings",
+      "icon": "menu-icon tf-icons mdi mdi-account-outline",
+      "slug": "pages-account-settings",
+      "submenu": [
+        {
+          "url": "pages/account-settings-account",
+          "name": "Account",
+          "slug": "pages-account-settings-account"
+        },
+        {
+          "url": "pages/account-settings-notifications",
+          "name": "Notifications",
+          "slug": "pages-account-settings-notifications"
+        },
+        {
+          "url": "pages/account-settings-connections",
+          "name": "Connections",
+          "slug": "pages-account-settings-connections"
+        }
+      ]
+    },
+    {
+      "name": "Authentications",
+      "icon": "menu-icon tf-icons mdi mdi-lock-open-outline",
+      "slug": "auth",
+      "submenu": [
+        {
+          "url": "auth/login-basic",
+          "name": "Login",
+          "slug": "auth-login-basic",
+          "target": "_blank"
+        },
+        {
+          "url": "auth/register-basic",
+          "name": "Register",
+          "slug": "auth-register-basic",
+          "target": "_blank"
+        },
+        {
+          "url": "auth/forgot-password-basic",
+          "name": "Forgot Password",
+          "slug": "auth-forgot-password-basic",
+          "target": "_blank"
+        }
+      ]
+    },
+    {
+      "name": "Misc",
+      "icon": "menu-icon tf-icons mdi mdi-cube-outline",
+      "slug": "pages-misc",
+      "submenu": [
+        {
+          "url": "pages/misc-error",
+          "name": "Error",
+          "slug": "pages-misc-error",
+          "target": "_blank"
+        },
+        {
+          "url": "pages/misc-under-maintenance",
+          "name": "Under Maintenance",
+          "slug": "pages-misc-under-maintenance",
+          "target": "_blank"
+        }
+      ]
+    },
+    {
+      "menuHeader": "Components"
+    },
+    {
+      "name": "Cards",
+      "icon": "menu-icon tf-icons mdi mdi-credit-card-outline",
+      "slug": "cards-basic",
+      "url": "cards/basic"
+    },
+    {
+      "name": "User interface",
+      "icon": "menu-icon tf-icons mdi mdi-archive-outline",
+      "slug": "ui",
+      "submenu": [
+        {
+          "url": "ui/accordion",
+          "name": "Accordion",
+          "slug": "ui-accordion"
+        },
+        {
+          "url": "ui/alerts",
+          "name": "Alerts",
+          "slug": "ui-alerts"
+        },
+        {
+          "url": "ui/badges",
+          "name": "Badges",
+          "slug": "ui-badges"
+        },
+        {
+          "url": "ui/buttons",
+          "name": "Buttons",
+          "slug": "ui-buttons"
+        },
+        {
+          "url": "ui/carousel",
+          "name": "Carousel",
+          "slug": "ui-carousel"
+        },
+        {
+          "url": "ui/collapse",
+          "name": "Collapse",
+          "slug": "ui-collapse"
+        },
+        {
+          "url": "ui/dropdowns",
+          "name": "Dropdowns",
+          "slug": "ui-dropdowns"
+        },
+        {
+          "url": "ui/footer",
+          "name": "Footer",
+          "slug": "ui-footer"
+        },
+        {
+          "url": "ui/list-groups",
+          "name": "List Groups",
+          "slug": "ui-list-groups"
+        },
+        {
+          "url": "ui/modals",
+          "name": "Modals",
+          "slug": "ui-modals"
+        },
+        {
+          "url": "ui/navbar",
+          "name": "Navbar",
+          "slug": "ui-navbar"
+        },
+        {
+          "url": "ui/offcanvas",
+          "name": "Offcanvas",
+          "slug": "ui-offcanvas"
+        },
+        {
+          "url": "ui/pagination-breadcrumbs",
+          "name": "Pagination & Breadcrumbs",
+          "slug": "ui-pagination-breadcrumbs"
+        },
+        {
+          "url": "ui/progress",
+          "name": "Progress",
+          "slug": "ui-progress"
+        },
+        {
+          "url": "ui/spinners",
+          "name": "Spinners",
+          "slug": "ui-spinners"
+        },
+        {
+          "url": "ui/tabs-pills",
+          "name": "Tabs & Pills",
+          "slug": "ui-tabs-pills"
+        },
+        {
+          "url": "ui/toasts",
+          "name": "Toasts",
+          "slug": "ui-toasts"
+        },
+        {
+          "url": "ui/tooltips-popovers",
+          "name": "Tooltips & Popovers",
+          "slug": "ui-tooltips-popovers"
+        },
+        {
+          "url": "ui/typography",
+          "name": "Typography",
+          "slug": "ui-typography"
+        }
+      ]
+    },
+    {
+      "name": "Extended UI",
+      "icon": "menu-icon tf-icons mdi mdi-star-outline",
+      "slug": "extended",
+      "submenu": [
+        {
+          "url": "extended/ui-perfect-scrollbar",
+          "name": "Perfect scrollbar",
+          "slug": "extended-ui-perfect-scrollbar"
+        },
+        {
+          "url": "extended/ui-text-divider",
+          "name": "Text Divider",
+          "slug": "extended-ui-text-divider"
+        }
+      ]
+    },
+    {
+      "url": "icons/icons-mdi",
+      "icon": "menu-icon tf-icons mdi mdi-google-circles-extended",
+      "name": "Icons",
+      "slug": "icons-mdi"
+    },
+    {
+      "menuHeader": "Forms & Tables"
+    },
+    {
+      "name": "Form Elements",
+      "icon": "menu-icon tf-icons mdi mdi-form-select",
+      "slug": "forms",
+      "submenu": [
+        {
+          "url": "forms/basic-inputs",
+          "name": "Basic Inputs",
+          "slug": "forms-basic-inputs"
+        },
+        {
+          "url": "forms/input-groups",
+          "name": "Input groups",
+          "slug": "forms-input-groups"
+        }
+      ]
+    },
+    {
+      "name": "Form Layouts",
+      "icon": "menu-icon tf-icons mdi mdi-cube-outline",
+      "slug": "form-layouts",
+      "submenu": [
+        {
+          "url": "form/layouts-vertical",
+          "name": "Vertical Form",
+          "slug": "form-layouts-vertical"
+        },
+        {
+          "url": "form/layouts-horizontal",
+          "name": "Horizontal Form",
+          "slug": "form-layouts-horizontal"
+        }
+      ]
+    },
+    {
+      "url": "tables/basic",
+      "icon": "menu-icon tf-icons mdi mdi-table",
+      "name": "Tables",
+      "slug": "tables-basic"
+    }
+  ]
+}
