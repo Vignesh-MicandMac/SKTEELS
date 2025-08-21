@@ -182,7 +182,18 @@ class PromotorController extends Controller
             if ($promotor->img_path && Storage::disk('public')->exists($promotor->img_path)) {
                 Storage::disk('public')->delete($promotor->img_path);
             }
-            $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+            // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+            $file = $request->file('img_path');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage\uploads\promotors');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+
+            $imagePath = 'uploads/promotors/' . $filename;
         }
 
         $promotor->update([

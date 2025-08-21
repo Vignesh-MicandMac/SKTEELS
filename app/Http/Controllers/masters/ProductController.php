@@ -46,7 +46,19 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('img_path')) {
-            $imagePath = $request->file('img_path')->store('uploads', 'public');
+            // $imagePath = $request->file('img_path')->store('uploads', 'public');
+            // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+            $file = $request->file('img_path');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage\uploads\gifts');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+
+            $imagePath = 'uploads/gifts/' . $filename;
             $validated['img_path'] = $imagePath;
         }
 
@@ -92,12 +104,23 @@ class ProductController extends Controller
             'product_code.unique' => 'Product Code should be unique.',
         ]);
 
-        $validated['availability'] = $request->has('availability') ? 1 : 0;
+        $validated['availability'] = $request->has('availability') ? '1' : '0';
         if ($request->hasFile('img_path')) {
             if ($product->img_path && Storage::disk('public')->exists($product->img_path)) {
                 Storage::disk('public')->delete($product->img_path);
             }
-            $imagePath = $request->file('img_path')->store('uploads', 'public');
+            // $imagePath = $request->file('img_path')->store('uploads', 'public');
+            $file = $request->file('img_path');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage\uploads\gifts');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+
+            $imagePath = 'uploads/gifts/' . $filename;
             $validated['img_path'] = $imagePath;
         }
 

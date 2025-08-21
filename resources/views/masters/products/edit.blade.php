@@ -131,8 +131,7 @@
             console.log(productId);
             let availability = $(this).is(':checked') ? 1 : 0;
             console.log(availability);
-            let url = '{{ url('
-            masters / product - upload / update - availability ') }}/' + productId;
+            let url = '{{ url('masters/product-upload/update-availability') }}/' + productId;
 
             $.ajax({
                 url: url,
