@@ -22,4 +22,9 @@ class Pincode extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function siteEntries()
+    {
+        return $this->hasMany(SiteEntry::class, 'pincode_id');
+    }
 }

@@ -125,7 +125,7 @@
             @endif
 
             @if(hasPermission(['view_redeem_approval']))
-            <li class="menu-item"><a href="{{ url('activity/Redeem-approval') }}" class="menu-link">
+            <li class="menu-item"><a href="{{ url('activity/stocks/redeem-approval') }}" class="menu-link">
                     <div>Redeem Approval</div>
                 </a></li>
             @endif
@@ -135,6 +135,11 @@
                     <div>Gift Products</div>
                 </a></li>
             @endif
+
+            <li class="menu-item"><a href="{{ url('activity/stocks/site-entry') }}" class="menu-link">
+                    <div>Site Entry</div>
+                </a></li>
+
         </ul>
     </li>
     @endif

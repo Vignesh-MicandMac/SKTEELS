@@ -47,4 +47,9 @@ class Dealers extends Model
   {
     return $this->hasMany(PromotorDealerMapping::class, 'dealer_id');
   }
+
+  public function siteEntries()
+  {
+    return $this->hasMany(SiteEntry::class, 'dealer_id');
+  }
 }

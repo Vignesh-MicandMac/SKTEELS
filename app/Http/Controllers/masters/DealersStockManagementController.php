@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\DealersStock;
 use App\Models\Promotor;
+use App\Models\PromotorRedeemProduct;
 use App\Models\PromotorSaleEntry;
+use App\Models\SiteEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -288,5 +290,61 @@ class DealersStockManagementController extends Controller
             'approval_status' => $request->approved_status,
         ]);
         return response()->json(['success' => 'Updated successfully!']);
+    }
+
+    public function site_entry()
+    {
+        $site_entries = SiteEntry::whereNull('deleted_at')->get();
+        return view('activity.stocks.site_entry', compact('site_entries'));
+    }
+
+    public function redeem_approval()
+    {
+        $redeem_products = PromotorRedeemProduct::whereNull('deleted_at')->get();
+        return view('activity.stocks.redeem_approval', compact('redeem_products'));
+    }
+
+    public function redeeem_approval_or_unapproval(Request $request, $id)
+    {
+
+        if ($request->approved_status == 1) {
+
+            $gift_product = PromotorRedeemProduct::where('id', $id)->whereNull('deleted_at')->first();
+            $promotor = Promotor::where('id', $gift_product->promotor_id)->whereNull('deleted_at')->first();
+            $reduce_promotor_point = $promotor->points - $gift_product->product_redeem_points;
+
+            if ($gift_product->product_redeem_points <= $promotor->points) {
+
+                $promotor->update([
+                    'points' => $reduce_promotor_point
+                ]);
+                $gift_product->update([
+                    'approved_status' => $request->approved_status
+                ]);
+
+                return response()->json(['success' => 'Redeem Approved successfully!']);
+            } else {
+                return response()->json(['error' => 'Rededem Points exceeded the Promotor points by ' . $reduce_promotor_point . '!'], 422);
+            }
+        }
+
+        if ($request->approved_status == 2) {
+
+            $gift_product = PromotorRedeemProduct::where('id', $id)->whereNull('deleted_at')->first();
+            $promotor = Promotor::where('id', $gift_product->promotor_id)->whereNull('deleted_at')->first();
+            $reduce_promotor_point = $promotor->points + $gift_product->product_redeem_points;
+
+            $promotor->update([
+                'points' => $reduce_promotor_point
+            ]);
+
+            $gift_product->update([
+                'approved_status' => $request->approved_status
+            ]);
+
+            return response()->json(['success' => 'Redeem UnApproved successfully!']);
+        } else {
+            return response()->json(['error' => 'Something went Wrong'], 422);
+        }
     }
 }

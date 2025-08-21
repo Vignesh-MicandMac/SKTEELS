@@ -50,4 +50,25 @@ class Executive extends Model
     {
         return $this->hasMany(ExecutiveDealerMapping::class, 'executive_id');
     }
+
+    public function siteEntries()
+    {
+        return $this->hasMany(SiteEntry::class, 'executive_id');
+    }
+
+
+    public function state()
+    {
+        return $this->belongsTo(States::class, 'state_id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+
+    public function pincode()
+    {
+        return $this->belongsTo(Pincode::class, 'pincode_id');
+    }
 }

@@ -26,4 +26,9 @@ class District extends Model
     {
         return $this->hasMany(Pincode::class);
     }
+
+    public function siteEntries()
+    {
+        return $this->hasMany(SiteEntry::class, 'district_id');
+    }
 }

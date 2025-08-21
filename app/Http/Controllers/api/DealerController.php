@@ -127,7 +127,7 @@ class DealerController extends Controller
         }
 
         $mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)->whereNull('deleted_at')->pluck('promotor_id');
-        $mapped_promotors = Promotor::whereIn('id', $mapped_promotor_ids)->whereNull('deleted_at')->get();
+        $mapped_promotors = Promotor::whereIn('id', $mapped_promotor_ids)->where('approval_status', 1)->whereNull('deleted_at')->get();
 
         if ($mapped_promotors->isEmpty()) {
             return response()->json([

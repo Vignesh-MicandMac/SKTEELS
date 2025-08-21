@@ -12,4 +12,9 @@ class PromotorType extends Model
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = ['promotor_type', 'is_active'];
+
+    public function siteEntries()
+    {
+        return $this->hasMany(SiteEntry::class, 'promotor_type_id');
+    }
 }
