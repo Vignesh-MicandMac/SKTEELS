@@ -70,7 +70,18 @@ class PromotorController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('img_path')) {
-            $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+            // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+            $file = $request->file('img_path');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage\uploads\promotors');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+
+            $imagePath = 'uploads/promotors/' . $filename;
         }
 
         $promotor = Promotor::create([
@@ -92,7 +103,7 @@ class PromotorController extends Controller
             'is_active'         => 1,
         ]);
 
-        $enrollNumber = 'SK' . str_pad($promotor->id + 100000, 6, '0', STR_PAD_LEFT);
+        $enrollNumber = 'PR' . str_pad($promotor->id + 100000, 6, '0', STR_PAD_LEFT);
         $promotor->enroll_no = $enrollNumber;
         $promotor->save();
 

@@ -43,8 +43,12 @@ class DealersController extends Controller
             return redirect()->back()->with('warning', 'Please fill the required fields')->withErrors($validator)->withInput();
         }
 
+        $lastDealer = Dealers::orderBy('tally_dealer_id', 'desc')->first();
+
+        $nextNumber = ($lastDealer->tally_dealer_id != NULL) ? ($lastDealer->tally_dealer_id + 1) : 1000;
+
         Dealers::create([
-            'tally_dealer_id' => NULL,
+            'tally_dealer_id' => $nextNumber,
             'name' => $request->name,
             'mobile' => $request->mobile,
             'address' => $request->address,

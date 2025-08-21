@@ -35,6 +35,7 @@ Route::delete('/dealers/{id}', [DealerController::class, 'destroy']);
 Route::get('/states', [DealerController::class, 'state']);
 Route::get('/districts/{id}', [DealerController::class, 'getDistricts']);
 Route::post('/get-mapped-promotors', [DealerController::class, 'getMappedPromotors']);
+Route::post('/add-promotors', [DealerController::class, 'add_promotors']);
 
 //Executives
 Route::get('/executives-list', [ExecutivesController::class, 'index']);
