@@ -27,11 +27,6 @@
           "slug": "masters.executive.mapping.index"
         },
         {
-          "url": "masters/product-upload",
-          "name": "Product Upload",
-          "slug": "masters.products.index"
-        },
-        {
           "url": "masters/promotors_type",
           "name": "Promotors Type",
           "slug": "masters.pro_type.index"
@@ -87,6 +82,11 @@
           "url": "activity/Redeem-approval",
           "name": "Redeem Approval",
           "slug": "activity.redeem-approval"
+        },
+        {
+          "url": "masters/product-upload",
+          "name": "Gifts",
+          "slug": "masters.products.index"
         }
       ]
     },

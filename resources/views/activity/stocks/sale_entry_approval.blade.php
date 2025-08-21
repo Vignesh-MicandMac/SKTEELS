@@ -131,23 +131,23 @@
                         <td>
                             <div class="d-flex gap-2">
 
-                                @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 2)
+                                {{-- @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 2) --}}
                                 <button
                                     type="button"
                                     class="btn btn-success btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $sale_entry->id }}, 1)">
                                     Approve
                                 </button>
-                                @endif
+                                {{-- @endif --}}
 
-                                @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 1)
+                                {{-- @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 1) --}}
                                 <button
                                     type="button"
                                     class="btn btn-danger btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $sale_entry->id }}, 2)">
                                     UnApprove
                                 </button>
-                                @endif
+                                {{-- @endif --}}
                             </div>
                         </td>
 
@@ -225,6 +225,7 @@
 
 
     function updateStatus(id, status) {
+        console.log('status', status);
         Swal.fire({
             title: 'Are you sure?',
             text: "You are about to change the status.",
@@ -236,7 +237,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/activity/stocks/sale-entry-update/' + id,
+                    url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',
@@ -253,10 +254,17 @@
                         setTimeout(() => location.reload(), 1600);
                     },
                     error: function(xhr) {
+                        let errorMessage = "Something went wrong.";
+
+                        // Check if backend sent JSON with "error"
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: 'Something went wrong.',
+                            text: errorMessage,
                         });
                     }
                 });

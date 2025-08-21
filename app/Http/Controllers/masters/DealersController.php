@@ -5,9 +5,11 @@ namespace App\Http\Controllers\masters;
 use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\District;
+use App\Models\Pincode;
 use App\Models\States;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class DealersController extends Controller
@@ -113,5 +115,10 @@ class DealersController extends Controller
     {
         $districts = District::where('state_id', $state_id)->whereNull('deleted_at')->get();
         return response()->json($districts);
+    }
+    public function getPincodes($district_id)
+    {
+        $pincodes = Pincode::where('district_id', $district_id)->get();
+        return response()->json($pincodes);
     }
 }

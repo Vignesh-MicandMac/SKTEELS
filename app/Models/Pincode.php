@@ -7,18 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class States extends Model
+class Pincode extends Model
 {
     use HasFactory, Notifiable, SoftDeletes;
-    protected $fillable = ['id', 'state_code', 'state_name'];
 
-    public function dealers()
+    protected $fillable = ['state_id', 'district_id', 'pincode'];
+
+    public function state()
     {
-        return $this->hasMany(Dealers::class, 'state');
+        return $this->belongsTo(States::class);
     }
 
-    public function pincodes()
+    public function district()
     {
-        return $this->hasMany(Pincode::class);
+        return $this->belongsTo(District::class);
     }
 }

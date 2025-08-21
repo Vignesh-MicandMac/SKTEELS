@@ -137,6 +137,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/update/{id}', [DealersController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [DealersController::class, 'destroy'])->name('destroy');
         Route::get('/get-districts/{state_id}', [DealersController::class, 'getDistricts']);
+        Route::get('/get-pincodes/{district_id}', [DealersController::class, 'getPincodes']);
     });
 
     //Executives
@@ -220,7 +221,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy/{id}', [DealersStockManagementController::class, 'destroy'])->name('destroy');
         Route::get('/dealer-stock/{id}', [DealersStockManagementController::class, 'getDealerStock'])->name('dealer.stock');
         Route::get('/sale-entry', [DealersStockManagementController::class, 'sale_entry'])->name('sale_entry');
-        Route::post('/sale-entry-update/{id}', [DealersStockManagementController::class, 'sale_entry_update'])->name('sale_entry_update');
+        // Route::post('/sale-entry-approval/{id}', [DealersStockManagementController::class, 'sale_entry_approval'])->name('sale_entry_approval');
+        Route::post('/sale-entry-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'sale_entry_approval_or_unapproval'])->name('sale_entry_approval_or_unapproval');
         Route::get('/promotors-approval', [DealersStockManagementController::class, 'promotors_approval_list'])->name('promotors_approval');
         Route::post('/promotors-approval-update/{id}', [DealersStockManagementController::class, 'promotors_approval_update'])->name('promotors_approval_update');
     });

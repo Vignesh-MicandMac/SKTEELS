@@ -22,10 +22,10 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Mobile</th>
-                        <!-- <th>Address</th> -->
                         <th>State</th>
                         <th>District</th>
                         <th>Area</th>
+                        <th>Address</th>
                         <th>Pincode</th>
                         <th>GST No</th>
                         <!-- <th>Created At</th> -->
@@ -41,10 +41,10 @@
                         <td>{{ $dealer->id }}</td>
                         <td>{{ $dealer->name ?? 'N/A'}}</td>
                         <td>{{ $dealer->mobile ?? 'N/A'}}</td>
-                        <!-- <td>{{ $dealer->address ?? 'N/A'}}</td> -->
                         <td>{{ $dealer->states->state_name ?? 'N/A' }}</td>
                         <td>{{ $dealer->districts->district_name ?? 'N/A'}}</td>
                         <td>{{ $dealer->area ?? 'N/A'}}</td>
+                        <td>{{ $dealer->address ?? 'N/A'}}</td>
                         <td>{{ $dealer->pincode ?? 'N/A'}}</td>
                         <td>{{ $dealer->gst_no ?? 'N/A'}}</td>
                         <!-- <td>{{ \Carbon\Carbon::parse($dealer->created_at)->format('d-m-Y') ?? 'N/A'}}</td> -->

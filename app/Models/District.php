@@ -21,4 +21,9 @@ class District extends Model
     {
         return $this->hasMany(Dealers::class, 'district');
     }
+
+    public function pincodes()
+    {
+        return $this->hasMany(Pincode::class);
+    }
 }

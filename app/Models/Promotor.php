@@ -20,7 +20,7 @@ class Promotor extends Model
         'mobile',
         'whatsapp_no',
         'aadhaar_no',
-        'door_no',
+        'address',
         'state_id',
         'district_id',
         'area_name',

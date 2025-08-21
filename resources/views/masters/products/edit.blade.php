@@ -3,7 +3,7 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<h5 class="py-3 mb-4"><span class="text-muted fw-light">Masters /</span> Edit Product</h5>
+<h5 class="py-3 mb-4"><span class="text-muted fw-light">Masters /</span> Edit Gift Product</h5>
 
 <div class="row">
     <div class="col-xxl">
@@ -95,7 +95,7 @@
                     <div class="row justify-content-end">
                         <div class="col-sm-12 d-flex justify-content-end gap-2">
                             <a href="{{ route('masters.products.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
-                            <button type="submit" class="btn btn-primary btn-sm">Update Product</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Update Gift Product</button>
                         </div>
                     </div>
                 </form>

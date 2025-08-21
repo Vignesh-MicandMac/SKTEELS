@@ -212,21 +212,63 @@ class DealersStockManagementController extends Controller
         return view('activity.stocks.sale_entry_approval', compact('promotor_sale_entries', 'dealers', 'promotors'));
     }
 
-    public function sale_entry_update(Request $request, $id)
+    public function sale_entry_approval_or_unapproval(Request $request, $id)
     {
 
-        $sale_entry = PromotorSaleEntry::findOrFail($id);
-        $sale_entry->approved_status = $request->approved_status;
-        $sale_entry->save();
+
+        if ($request->approved_status == 1) {
+
+            $sale_entry = PromotorSaleEntry::findOrFail($id);
+
+            //update dealer stock
+            $update_approved_stock = DealersStock::where('dealer_id', $sale_entry->dealer_id)->orderBy('id', 'desc')->first();
+            $balance_stock = $update_approved_stock->total_stock - $sale_entry->quantity;
+
+            if ($update_approved_stock && $update_approved_stock->total_stock >= $sale_entry->quantity) {
+
+                $sale_entry->approved_status = $request->approved_status;
+                $sale_entry->save();
+
+                $update_approved_stock->update([
+                    'promoter_sales' => $sale_entry->quantity,
+                    'balance_stock' => $balance_stock,
+                    'total_current_stock' => $balance_stock,
+                ]);
+
+                //update promotor points
+                $update_promotor_points = Promotor::where('id', $sale_entry->promotor_id)->first();
+                $total_promotor_points = ($update_promotor_points->points ?? 0) + $sale_entry->obtained_points;
+
+                $update_promotor_points->update([
+                    'points' => $total_promotor_points,
+                ]);
+                return response()->json(['success' => 'Approved successfully!']);
+            } else {
+                return response()->json(['error' => 'Sale quantity exceeded the total stock by ' . $balance_stock . '!'], 422);
+            }
+        }
 
         if ($request->approved_status == 2) {
 
+            $sale_entry = PromotorSaleEntry::findOrFail($id);
+            $sale_entry->approved_status = $request->approved_status;
+            $sale_entry->save();
+
             $update_declined_stock = DealersStock::where('dealer_id', $sale_entry->dealer_id)->orderBy('id', 'desc')->first();
             $total_current_stock = $update_declined_stock->total_current_stock + $sale_entry->quantity;
+
             $update_declined_stock->update([
                 'declined_stock' => $sale_entry->quantity,
                 'date_of_declined' => now(),
                 'total_current_stock' => $total_current_stock,
+            ]);
+
+            //update promotor points
+            $update_promotor_points = Promotor::where('id', $sale_entry->promotor_id)->first();
+            $total_promotor_points = ($update_promotor_points->points ?? 0) - $sale_entry->obtained_points;
+
+            $update_promotor_points->update([
+                'points' => $total_promotor_points,
             ]);
 
             return response()->json(['success' => 'UnApproved successfully!']);
@@ -242,7 +284,7 @@ class DealersStockManagementController extends Controller
     public function promotors_approval_update(Request $request, $id)
     {
         $promotors = Promotor::findOrFail($id);
-        $promotors->update([    
+        $promotors->update([
             'approval_status' => $request->approved_status,
         ]);
         return response()->json(['success' => 'Updated successfully!']);

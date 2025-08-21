@@ -84,8 +84,8 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Door Number</label>
-                                <input type="text" name="door_no" class="form-control" placeholder="Door Number" value="{{ old('door_no',$promotor->door_no) }}">
+                                <label class="form-label">Address</label>
+                                <input type="text" name="address" class="form-control" placeholder="Enter Address" value="{{ old('door_no',$promotor->door_no) }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">State</label>
@@ -118,7 +118,11 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Pin Code</label>
-                                <input type="text" name="pincode" class="form-control" placeholder="Enter 6-digit PIN" value="{{ old('pincode',$promotor->pincode) }}">
+                                <!-- <input type="text" name="pincode" class="form-control" placeholder="Enter 6-digit PIN" value="{{ old('pincode',$promotor->pincode) }}"> -->
+                                <select name="pincode" id="pincode-select" class="form-control">
+                                    <option value="">Select Pincode</option>
+                                </select>
+
                                 @error('pincode') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
@@ -250,6 +254,24 @@
                 $('#district-select').empty().append('<option value="">Select District</option>');
             }
         });
+    });
+
+    $('#district-select').on('change', function() {
+        let districtId = $(this).val();
+        if (districtId) {
+            $.ajax({
+                url: '/masters/dealers/get-pincodes/' + districtId,
+                type: 'GET',
+                success: function(data) {
+                    $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
+                    $.each(data, function(key, value) {
+                        $('#pincode-select').append('<option value="' + value.pincode + '">' + value.pincode + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
+        }
     });
 </script>
 @endpush

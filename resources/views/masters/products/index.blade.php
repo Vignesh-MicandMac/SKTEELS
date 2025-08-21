@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h5 class="py-3 mb-0"><span class="text-muted fw-light">Masters /</span> Products List</h5>
+    <h5 class="py-3 mb-0"><span class="text-muted fw-light">Masters /</span>Gift Products List</h5>
     @if(hasPermission(['add_product_upload']))
     <a href="{{ route('masters.products.create') }}" class="btn btn-primary btn-sm">
-        <i class="mdi mdi-plus me-1"></i> Add Product
+        <i class="mdi mdi-plus me-1"></i> Add Gift Product
     </a>
     @endif
 </div>
