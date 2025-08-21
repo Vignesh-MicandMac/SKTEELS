@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\District;
+use App\Models\Pincode;
 use App\Models\Promotor;
 use App\Models\PromotorDealerMapping;
 use App\Models\States;
@@ -66,7 +67,7 @@ class DealerController extends Controller
     {
         $states = States::whereNull('deleted_at')->select('id', 'state_code', 'state_name')->get();
 
-        if (isEmpty($states)) {
+        if ($states->isEmpty()) {
             return response()->json(['status' => false, 'message' => 'States not found'], 404);
         }
 
@@ -77,10 +78,14 @@ class DealerController extends Controller
         ]);
     }
 
-    public function getDistricts($state_id)
+    public function getDistricts(Request $request)
     {
-        $districts = District::where('state_id', $state_id)->whereNull('deleted_at')->select('id', 'state_id', 'district_name')->get();
-        if (isEmpty($districts)) {
+        if (!$request->state_id) {
+            return response()->json(['status' => false, 'message' => 'State Id is required'], 400);
+        }
+
+        $districts = District::where('state_id', $request->state_id)->whereNull('deleted_at')->select('id', 'state_id', 'district_name')->get();
+        if ($districts->isEmpty()) {
             return response()->json(['status' => false, 'message' => 'Districts not found this State Id'], 404);
         }
 
@@ -88,6 +93,25 @@ class DealerController extends Controller
             'status' => true,
             'message' => 'Districts fetched successfully',
             'states' => $districts
+        ]);
+    }
+
+    public function getPincodes(Request $request)
+    {
+        if (!$request->district_id) {
+            return response()->json(['status' => false, 'message' => 'District Id is required'], 400);
+        }
+
+        $pincodes = Pincode::where('district_id', $request->district_id)->whereNull('deleted_at')->select('id', 'state_id', 'district_id', 'pincode')->get();
+
+        if ($pincodes->isEmpty()) {
+            return response()->json(['status' => false, 'message' => 'Pincodes not found this District Id'], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Pincodes fetched successfully',
+            'states' => $pincodes
         ]);
     }
 

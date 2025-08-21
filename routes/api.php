@@ -33,7 +33,8 @@ Route::post('/dealers', [DealerController::class, 'store']);
 Route::put('/dealers/{id}', [DealerController::class, 'update']);
 Route::delete('/dealers/{id}', [DealerController::class, 'destroy']);
 Route::get('/states', [DealerController::class, 'state']);
-Route::get('/districts/{id}', [DealerController::class, 'getDistricts']);
+Route::get('/districts', [DealerController::class, 'getDistricts']);
+Route::get('/pincodes', [DealerController::class, 'getPincodes']);
 Route::post('/get-mapped-promotors', [DealerController::class, 'getMappedPromotors']);
 Route::post('/add-promotors', [DealerController::class, 'add_promotors']);
 
