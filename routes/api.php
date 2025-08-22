@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\DealerController;
 use App\Http\Controllers\api\ExecutivesController;
+use App\Http\Controllers\api\RedeemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,4 +44,11 @@ Route::get('/executives-list', [ExecutivesController::class, 'index']);
 Route::post('/executives', [ExecutivesController::class, 'store']);
 Route::put('executives/{id}', [ExecutivesController::class, 'update']);
 Route::delete('executives/{id}', [ExecutivesController::class, 'destroy']);
+
+//Redeem 
+Route::get('/overall-gift-list', [RedeemController::class, 'index']);
+Route::get('/points-based-gifts-list', [RedeemController::class, 'points_based_gifts']);
+Route::post('/redeemed-gifts-list', [RedeemController::class, 'store']);
+Route::get('/promotor-redeemed-gifts', [RedeemController::class, 'show']);
+Route::get('/promotor-sites', [RedeemController::class, 'create']);
 // });

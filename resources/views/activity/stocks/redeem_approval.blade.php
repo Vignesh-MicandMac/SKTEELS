@@ -8,6 +8,80 @@
 </div>
 
 
+<div class="row">
+    <!-- Basic Layout -->
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Search Stocks</h5>
+            </div>
+            <div class="card-body">
+                {{-- @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}
+            </div>
+            @endif --}}
+
+            <form method="GET" action="{{ route('activity.stocks.redeem_approval') }}">
+                @csrf
+
+                <div class="row mb-3">
+
+                    <div class="col-md-6">
+                        <label for="promotor_ids" class="form-label"> Promotors</label>
+                        <select name="promotor_id" id="promotor-select" class="form-select select2">
+                            <option value="">Select Promotors</option>
+                            @foreach($promotors as $promotor)
+                            <option value="{{ $promotor->id }}" {{ request('promotor_id') == $promotor->id ? 'selected' : '' }}>{{ $promotor->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('promotor_id') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="approved_status" class="form-label"> Promotors</label>
+                        <select name="approved_status" id="promotor-select" class="form-select select2">
+                            <option value="">Select Status</option>
+                            <option value="0" {{ request('approved_status') === '0' ? 'selected' : '' }}>Pending</option>
+                            <option value="1" {{ request('approved_status') === '1' ? 'selected' : '' }}>Approved</option>
+                            <option value="2" {{ request('approved_status') === '2' ? 'selected' : '' }}>UnApproved</option>
+                        </select>
+                        @error('approved_status') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                        @error('start_date') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                        @error('end_date') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-sm-12 d-flex justify-content-end gap-2">
+                        <a href="{{ route('activity.stocks.redeem_approval') }}" class="btn btn-light btn-sm">Clear</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</div>
+
+
 <!-- Dealers Table -->
 <div class="card">
     <div class="card-body">

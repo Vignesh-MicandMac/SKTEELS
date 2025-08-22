@@ -101,8 +101,8 @@
             @endif
 
             @if(hasPermission(['view_edit_stock']))
-            <li class="menu-item"><a href="{{ url('activity/edit-stock') }}" class="menu-link">
-                    <div>Edit Stock</div>
+            <li class="menu-item"><a href="{{ url('activity/stocks/edit-stock') }}" class="menu-link">
+                    <div>Update Stock</div>
                 </a></li>
             @endif
 
@@ -117,6 +117,10 @@
                     <div>Sale Entry Approval</div>
                 </a></li>
             @endif
+
+            <li class="menu-item"><a href="{{ url('activity/stocks/site-entry') }}" class="menu-link">
+                    <div>Site Entry</div>
+                </a></li>
 
             @if(hasPermission(['view_promotors_approval']))
             <li class="menu-item"><a href="{{ url('activity/stocks/promotors-approval') }}" class="menu-link">
@@ -136,9 +140,6 @@
                 </a></li>
             @endif
 
-            <li class="menu-item"><a href="{{ url('activity/stocks/site-entry') }}" class="menu-link">
-                    <div>Site Entry</div>
-                </a></li>
 
         </ul>
     </li>

@@ -107,17 +107,36 @@ class DealersStockManagementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit()
     {
-        //
+        $dealers = Dealers::whereNull('deleted_at')->get();
+        return view('activity.stocks.edit', compact('dealers'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'dealer_id' => 'required|exists:dealers,id',
+            'dispatch'  => 'required|numeric|min:1',
+        ], [
+            'dealer_id.required' => 'Please select a dealer.',
+            'dispatch.required'  => 'Please enter a stock amount.',
+            'dispatch.numeric'   => 'Stock must be a number.',
+            'dispatch.min'       => 'Stock must be at least 1.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('warning', $validator->errors()->first())->withErrors($validator)->withInput();
+        }
+
+        $latestStock = DealersStock::where('dealer_id', $request->dealer_id)->orderBy('id', 'desc')->first();
+        $latestStock->update([
+            'total_current_stock' => $request->dispatch,
+        ]);
+        return redirect()->route('activity.stocks.edit')->with('success', 'Stock updated for successfully!');
     }
 
     /**
@@ -298,10 +317,31 @@ class DealersStockManagementController extends Controller
         return view('activity.stocks.site_entry', compact('site_entries'));
     }
 
-    public function redeem_approval()
+    public function redeem_approval(Request $request)
     {
-        $redeem_products = PromotorRedeemProduct::whereNull('deleted_at')->get();
-        return view('activity.stocks.redeem_approval', compact('redeem_products'));
+        // $redeem_products = PromotorRedeemProduct::whereNull('deleted_at')->get();
+        $query = PromotorRedeemProduct::with(['dealer', 'executive', 'promotor']);
+
+        if ($request->filled('promotor_id')) {
+            $query->where('promotor_id', $request->promotor_id);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->filled('approved_status')) {
+            $query->where('approved_status', $request->approved_status);
+        }
+
+        $redeem_products = $query->orderBy('id', 'desc')->get();
+        // $dealers = Dealers::whereNull('deleted_at')->get();
+        $promotors = Promotor::whereNull('deleted_at')->get();
+
+        return view('activity.stocks.redeem_approval', compact('redeem_products', 'promotors'));
     }
 
     public function redeeem_approval_or_unapproval(Request $request, $id)

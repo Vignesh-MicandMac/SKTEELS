@@ -216,8 +216,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [DealersStockManagementController::class, 'store'])->name('store');
         Route::get('/closing-stock', [DealersStockManagementController::class, 'closing_stock_index'])->name('closing_stock_index');
         Route::post('/closing-stock-update', [DealersStockManagementController::class, 'closing_stock_update'])->name('closing_stock_update');
-        Route::get('/edit/{id}', [DealersStockManagementController::class, 'edit'])->name('edit');
-        Route::put('/update/{id}', [DealersStockManagementController::class, 'update'])->name('update');
+        Route::get('/edit-stock', [DealersStockManagementController::class, 'edit'])->name('edit');
+        Route::post('/update-stock', [DealersStockManagementController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [DealersStockManagementController::class, 'destroy'])->name('destroy');
         Route::get('/dealer-stock/{id}', [DealersStockManagementController::class, 'getDealerStock'])->name('dealer.stock');
         Route::get('/sale-entry', [DealersStockManagementController::class, 'sale_entry'])->name('sale_entry');
