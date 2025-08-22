@@ -8,7 +8,7 @@
                     <img src="{{ asset('logo.webp') }}" alt="Logo" class="img-fluid" style="width: 100%; height: auto;">
                 </div>
             </span>
-            <span class="app-brand-text demo menu-text fw-semibold ms-2">SK STEELS TECH</span>
+            <span class="app-brand-text demo menu-text fw-semibold ms-2 side-bar-text">SK STEELS TECH</span>
         </a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
             <i class="mdi menu-toggle-icon d-xl-block align-middle mdi-20px"></i>

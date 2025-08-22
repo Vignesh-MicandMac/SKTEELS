@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="approved_status" class="form-label"> Promotors</label>
+                        <label for="approved_status" class="form-label"> Approved Status</label>
                         <select name="approved_status" id="promotor-select" class="form-select select2">
                             <option value="">Select Status</option>
                             <option value="0" {{ request('approved_status') === '0' ? 'selected' : '' }}>Pending</option>
