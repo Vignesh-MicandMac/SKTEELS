@@ -52,6 +52,7 @@ use App\Http\Controllers\masters\ExecutivesController;
 use App\Http\Controllers\masters\ProductController;
 use App\Http\Controllers\masters\PromotorController;
 use App\Http\Controllers\masters\PromotorTypeController;
+use App\Http\Controllers\masters\ReportController;
 use App\Http\Controllers\masters\StockPointsController;
 use App\Http\Controllers\masters\StocksManagementController;
 use App\Http\Controllers\MastersController;
@@ -230,6 +231,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/redeem-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'redeeem_approval_or_unapproval'])->name('redeeem_approval_or_unapproval');
     });
 
+
+    //User Role Permissions
     Route::prefix('users/role')->name('users.role.')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('index');
         Route::get('/create', [RoleController::class, 'create'])->name('create');
@@ -250,63 +253,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [PermissionController::class, 'index'])->name('index');
         Route::post('/store', [PermissionController::class, 'store'])->name('store');
     });
+
+
+    //Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/influencer-list', [ReportController::class, 'influencer_list'])->name('influencer_list');
+        Route::get('/sale-entry-list', [ReportController::class, 'sale_entry_list'])->name('sale_entry_list');
+        Route::get('/redeem-points-list', [ReportController::class, 'redeem_points_list'])->name('redeem_points_list');
+        Route::get('/redeem-gifts-list', [ReportController::class, 'redeem_gifts_list'])->name('redeem_gifts_list');
+        Route::get('/redeem-gifts-list/export', [ReportController::class, 'exportRedeemGiftss'])->name('redeem_gifts_list.export');
+        Route::get('/dealers-stock-list', [ReportController::class, 'dealer_stock_list'])->name('dealer_stock_list');
+        Route::get('/sites-list', [ReportController::class, 'sites_list'])->name('sites_list');
+    });
 });
-
-// Route::middleware(['auth'])->group(function () {
-
-// //User Role and Permissions
-
-//     Route::prefix('users/role')->name('users.role.')->group(function () {
-//         Route::get('/', [RoleController::class, 'index'])->name('index');
-//         Route::get('/create', [RoleController::class, 'create'])->name('create');
-//         Route::post('/store', [RoleController::class, 'store'])->name('store');
-//     });
-//     Route::prefix('user')->name('users.')->group(function () {
-//         Route::get('/', [UserController::class, 'index'])->name('index');
-//         Route::get('/add-user/create', [UserController::class, 'create'])->name('create');
-//         Route::post('/add-user/store', [UserController::class, 'store'])->name('store');
-//     });
-//     Route::prefix('users/permissions')->name('users.permissions.')->group(function () {
-//         Route::get('/', [PermissionController::class, 'index'])->name('index');
-//         Route::post('/store', [PermissionController::class, 'store'])->name('store');
-//     });
-
-// //User Role and Permissions
-
-//     //Dashboard
-//     Route::get('/', [DashBoardController::class, 'index'])->name('dashboard');
-
-//     //Masters Menu
-
-//     //Dealers
-//     Route::prefix('masters/dealers')->name('masters.dealers.')->group(function () {
-//         Route::get('/', [DealersController::class, 'index'])->name('index');
-//         Route::get('/create', [DealersController::class, 'create'])->name('create');
-//         Route::post('/store', [DealersController::class, 'store'])->name('store');
-//         Route::get('/edit/{id}', [DealersController::class, 'edit'])->name('edit');
-//         Route::put('/update/{id}', [DealersController::class, 'update'])->name('update');
-//         Route::delete('/destroy/{id}', [DealersController::class, 'destroy'])->name('destroy');
-//         Route::get('/get-districts/{state_id}', [DealersController::class, 'getDistricts']);
-//     });
-
-//     //Executives
-//     Route::prefix('masters/executives')->name('masters.executives.')->group(function () {
-//         Route::get('/', [ExecutivesController::class, 'index'])->name('index');
-//         Route::get('/create', [ExecutivesController::class, 'create'])->name('create');
-//         Route::post('/store', [ExecutivesController::class, 'store'])->name('store');
-//         Route::get('/edit/{id}', [ExecutivesController::class, 'edit'])->name('edit');
-//         Route::put('/update/{id}', [ExecutivesController::class, 'update'])->name('update');
-//         Route::delete('/destroy/{id}', [ExecutivesController::class, 'destroy'])->name('destroy');
-//         Route::get('/get-districts/{state_id}', [ExecutivesController::class, 'getDistricts']);
-//     });
-
-//     //Executive Mapping 
-//     Route::prefix('masters/executive-mapping')->name('masters.executive.mapping.')->group(function () {
-//         Route::get('/', [ExecutiveDealerMappingController::class, 'index'])->name('index');
-//         Route::post('/store', [ExecutiveDealerMappingController::class, 'store'])->name('store');
-//         Route::get('/edit/{id}', [ExecutiveDealerMappingController::class, 'edit'])->name('edit');
-//         Route::put('/update/{id}', [ExecutiveDealerMappingController::class, 'update'])->name('update');
-//         Route::delete('/destroy/{id}', [ExecutiveDealerMappingController::class, 'destroy'])->name('destroy');
-//         Route::delete('/delete/{id}', [ExecutiveDealerMappingController::class, 'delete'])->name('delete');
-//     });
-// });

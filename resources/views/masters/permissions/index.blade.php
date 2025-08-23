@@ -42,7 +42,7 @@ $userPermissions = session('user_permissions', []);
                                     @php
                                     $dashboardPerm = $permissions->firstWhere('name', 'view_dashboard');
                                     @endphp
-                                    <input type="checkbox" class="form-check-input" name="permissions[]" value="{{ $dashboardPerm->id }}" id="view_dashboard" @if( in_array('view_dashboard', $userPermissions) ) checked @endif>
+                                    <input type="checkbox" class="form-check-input" name="permissions[]" value="{{ $dashboardPerm->id ?? ''}}" id="view_dashboard" @if( in_array('view_dashboard', $userPermissions) ) checked @endif>
                                     <label class="form-check-label" for="view_dashboard">{{ $dashboardPerm->label }}</label>
                                 </div>
                             </div>
@@ -60,7 +60,7 @@ $userPermissions = session('user_permissions', []);
                                 </div>
 
                                 <div class="row g-3">
-                                    @foreach(['dealers', 'executives', 'executive_mapping', 'product_upload', 'promotors_type', 'promotors', 'brands'] as $menu)
+                                    @foreach(['dealers', 'executives', 'executive_mapping', 'promotors_type', 'promotors'] as $menu)
                                     <div class="col-md-6 col-lg-3">
                                         <div class="mb-3">
                                             <h6 class="fw-semibold">{{ ucwords(str_replace('_', ' ', $menu)) }}</h6>
@@ -70,8 +70,8 @@ $userPermissions = session('user_permissions', []);
                                             $permission = $permissions->firstWhere('name', $permName);
                                             @endphp
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input masters-permission" name="permissions[]" value="{{ $permission->id }}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
-                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label }}</label>
+                                                <input type="checkbox" class="form-check-input masters-permission" name="permissions[]" value="{{ $permission->id ?? ''}}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
+                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label ?? ''}}</label>
                                             </div>
                                             @endforeach
                                         </div>
@@ -92,7 +92,7 @@ $userPermissions = session('user_permissions', []);
                                 </div>
 
                                 <div class="row g-2">
-                                    @foreach(['stock_points', 'add_stock', 'edit_stock', 'closing_stock_update', 'sale_entry_approval', 'promotors_approval', 'redeem_approval'] as $menu)
+                                    @foreach(['stock_points', 'add_stock', 'edit_stock', 'closing_stock_update', 'sale_entry_approval','site_entry', 'promotors_approval', 'redeem_approval', 'product_upload'] as $menu)
                                     <div class="col-md-6 col-lg-3">
                                         <div class="mb-3">
                                             <h6 class="fw-semibold">{{ ucwords(str_replace('_', ' ', $menu)) }}</h6>
@@ -103,7 +103,7 @@ $userPermissions = session('user_permissions', []);
                                             @endphp
                                             <div class="form-check">
                                                 <input type="checkbox" class="form-check-input activity-permissions" name="permissions[]" value="{{ $permission->id }}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
-                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label }}</label>
+                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label ?? ''}}</label>
                                             </div>
                                             @endforeach
                                         </div>
@@ -135,8 +135,41 @@ $userPermissions = session('user_permissions', []);
                                             $permission = $permissions->firstWhere('name', $permName);
                                             @endphp
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input users-permissions" name="permissions[]" value="{{ $permission->id }}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
-                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label }}</label>
+                                                <input type="checkbox" class="form-check-input users-permissions" name="permissions[]" value="{{ $permission->id ?? ''}}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
+                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label ?? '' }}</label>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- // Reports -->
+                        <div class="col-12">
+                            <div class="card p-3 border-light shadow-sm">
+                                <h6 class="fw-semibold mb-3">Reports</h6>
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input select-all" id="report_select_all">
+                                    <label class="form-check-label" for="report_select_all">Select All</label>
+                                </div>
+
+
+                                <div class="row g-2">
+                                    @foreach(['influencer', 'sales_entry', 'redeem_points','redeem_gift','dealer_stock','sites'] as $menu)
+                                    <div class="col-md-6 col-lg-3">
+                                        <div class="mb-3">
+                                            <h6 class="fw-semibold">{{ ucwords(str_replace('_', ' ', $menu)) }}</h6>
+                                            @foreach(['view', 'add', 'edit', 'delete'] as $action)
+                                            @php
+                                            $permName = "{$action}_{$menu}";
+                                            $permission = $permissions->firstWhere('name', $permName);
+                                            @endphp
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input report-permissions" name="permissions[]" value="{{ $permission->id ?? '' }}" id="{{ $permName }}" @if(in_array($permName, $userPermissions)) checked @endif>
+                                                <label class="form-check-label" for="{{ $permName }}">{{ $permission->label ?? '' }}</label>
                                             </div>
                                             @endforeach
                                         </div>
@@ -198,6 +231,23 @@ $userPermissions = session('user_permissions', []);
         // Select all toggle for Masters menu
         const mastersSelectAll = document.getElementById('users_select_all');
         const mastersCheckboxes = document.querySelectorAll('.users-permissions');
+
+        mastersSelectAll.addEventListener('change', function() {
+            mastersCheckboxes.forEach(cb => cb.checked = mastersSelectAll.checked);
+        });
+
+        // Optional: If all individual checkboxes are checked manually, main checkbox auto checks
+        mastersCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                mastersSelectAll.checked = [...mastersCheckboxes].every(c => c.checked);
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all toggle for Masters menu
+        const mastersSelectAll = document.getElementById('report_select_all');
+        const mastersCheckboxes = document.querySelectorAll('.report-permissions');
 
         mastersSelectAll.addEventListener('change', function() {
             mastersCheckboxes.forEach(cb => cb.checked = mastersSelectAll.checked);

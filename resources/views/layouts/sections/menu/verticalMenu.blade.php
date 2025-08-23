@@ -177,6 +177,10 @@
     </li>
     @endif
 
+
+    @if(hasPermission(['view_influencer','add_influencer','edit_influencer','delete_influencer','view_sales_entry','add_sales_entry','edit_sales_entry','delete_sales_entry'
+    ,'view_redeem_points','add_redeem_points','edit_redeem_points','delete_redeem_points','view_redeem_gift','add_redeem_gift','edit_redeem_gift','delete_redeem_gift','view_dealer_stock','add_dealer_stock','edit_dealer_stock','delete_dealer_stock',
+    'view_sites','add_sites','edit_sites','delete_sites']))
     <!-- Report -->
     <li class="menu-header fw-medium mt-3"><span class="menu-header-text">Reports</span></li>
     <li class="menu-item">
@@ -185,20 +189,44 @@
             <div>Report</div>
         </a>
         <ul class="menu-sub">
-            <li class="menu-item"><a href="report/redeem-list" class="menu-link">
-                    <div>Redeem List</div>
+            @if(hasPermission(['view_influencer']))
+            <li class="menu-item"><a href="{{ url('reports/influencer-list') }}" class="menu-link">
+                    <div>Influencer List</div>
                 </a></li>
-            <li class="menu-item"><a href="report/executive-site-visit" class="menu-link">
-                    <div>Executive Site Visit</div>
+            @endif
+
+            @if(hasPermission(['view_sales_entry']))
+            <li class="menu-item"><a href="{{ url('reports/sale-entry-list') }}" class="menu-link">
+                    <div>Sales Entry List</div>
                 </a></li>
-            <li class="menu-item"><a href="report/stock-management" class="menu-link">
-                    <div>Stock Management</div>
+            @endif
+
+            @if(hasPermission(['view_redeem_points']))
+            <li class="menu-item"><a href="{{ url('reports/redeem-points-list') }}" class="menu-link">
+                    <div>Redeem Points List</div>
                 </a></li>
-            <li class="menu-item"><a href="report/received-product-list" class="menu-link">
-                    <div>Recived Product List</div>
+            @endif
+
+            @if(hasPermission(['view_redeem_gift']))
+            <li class="menu-item"><a href="{{ url('reports/redeem-gifts-list') }}" class="menu-link">
+                    <div>Redeem Gift List</div>
                 </a></li>
+            @endif
+
+            @if(hasPermission(['view_dealer_stock']))
+            <li class="menu-item"><a href="{{ url('reports/dealers-stock-list') }}" class="menu-link">
+                    <div>Dealer Stock List</div>
+                </a></li>
+            @endif
+
+            @if(hasPermission(['view_sites']))
+            <li class="menu-item"><a href="{{ url('reports/sites-list') }}" class="menu-link">
+                    <div>Sites List</div>
+                </a></li>
+            @endif
         </ul>
     </li>
+    @endif
 
     <!-- Apps & Pages -->
     <!-- <li class="menu-header fw-medium mt-4"><span class="menu-header-text">Apps & Pages</span></li> -->

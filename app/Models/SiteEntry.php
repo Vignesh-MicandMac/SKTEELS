@@ -40,6 +40,11 @@ class SiteEntry extends Model
         return $this->belongsTo(PromotorType::class, 'promotor_type_id');
     }
 
+    public function promotor()
+    {
+        return $this->belongsTo(Promotor::class, 'promotor_id');
+    }
+
     public function executive()
     {
         return $this->belongsTo(Executive::class, 'executive_id');

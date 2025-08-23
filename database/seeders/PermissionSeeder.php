@@ -15,26 +15,33 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         DB::table('permissions')->delete();
+        DB::table('role_permissions')->delete();
 
-         $menus = [
+        $menus = [
             'dashboard' => ['view'],
             'dealers' => ['view', 'add', 'edit', 'delete'],
             'executives' => ['view', 'add', 'edit', 'delete'],
             'executive_mapping' => ['view', 'add', 'edit', 'delete'],
-            'product_upload' => ['view', 'add', 'edit', 'delete'],
             'promotors_type' => ['view', 'add', 'edit', 'delete'],
             'promotors' => ['view', 'add', 'edit', 'delete'],
-            'brands' => ['view', 'add', 'edit', 'delete'],
             'stock_points' => ['view', 'add', 'edit', 'delete'],
             'add_stock' => ['view', 'add', 'edit', 'delete'],
             'edit_stock' => ['view', 'add', 'edit', 'delete'],
             'closing_stock_update' => ['view', 'add', 'edit', 'delete'],
             'sale_entry_approval' => ['view', 'add', 'edit', 'delete'],
+            'site_entry' => ['view', 'add', 'edit', 'delete'],
             'promotors_approval' => ['view', 'add', 'edit', 'delete'],
             'redeem_approval' => ['view', 'add', 'edit', 'delete'],
+            'product_upload' => ['view', 'add', 'edit', 'delete'],
             'roles' => ['view', 'add', 'edit', 'delete'],
             'users' => ['view', 'add', 'edit', 'delete'],
             'user_role_permission' => ['view', 'add', 'edit', 'delete'],
+            'influencer' => ['view', 'add', 'edit', 'delete'],
+            'sales_entry' => ['view', 'add', 'edit', 'delete'],
+            'redeem_points' => ['view', 'add', 'edit', 'delete'],
+            'redeem_gift' => ['view', 'add', 'edit', 'delete'],
+            'dealer_stock' => ['view', 'add', 'edit', 'delete'],
+            'sites' => ['view', 'add', 'edit', 'delete'],
         ];
 
         $now = Carbon::now();
@@ -45,7 +52,8 @@ class PermissionSeeder extends Seeder
             foreach ($actions as $action) {
                 $data[] = [
                     'name'       => "{$action}_{$menu}",
-                    'label'      => ucfirst($action) . ' ' . ucwords(str_replace('_', ' ', $menu)),
+                    'label'      => ucfirst($action),
+                    // 'label'      => ucfirst($action) . ' ' . ucwords(str_replace('_', ' ', $menu)),
                     'created_at' => $now,
                     'updated_at' => $now
                 ];
@@ -53,7 +61,21 @@ class PermissionSeeder extends Seeder
         }
 
         DB::table('permissions')->insert($data);
-        
+
+        $permissions = DB::table('permissions')->get();
+
+        $rolePermissions = [];
+        foreach ($permissions as $permission) {
+            $rolePermissions[] = [
+                'role_id' => 1, // change accordingly
+                'permission_id' => $permission->id,
+                'created_at' => $now,
+                'updated_at' => $now
+            ];
+        }
+
+        DB::table('role_permissions')->insert($rolePermissions);
+
         // $permissions = [
         //     ['name' => 'view_dashboard', 'label' => 'Dashboard'],
         //     ['name' => 'view_dealers', 'label' => 'Dealers'],
