@@ -8,6 +8,7 @@ use App\Models\District;
 use App\Models\Pincode;
 use App\Models\Promotor;
 use App\Models\PromotorDealerMapping;
+use App\Models\SiteEntry;
 use App\Models\States;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -232,6 +233,96 @@ class DealerController extends Controller
                 'status'  => false,
                 'message' => 'Something went wrong!',
                 'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function site_entry(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'promotor_type_id' => 'required|integer',
+            'site_name' => 'required|string',
+            'executive_id' => 'required|integer',
+            'dealer_id' => 'integer',
+            'promotor_id' => 'required|integer',
+            'visit_date' => 'required|date',
+            'lat' => 'required|numeric',
+            'long' => 'required|numeric',
+            'state_id' => 'required|numeric',
+            'district_id' => 'required|numeric',
+            'pincode_id' => 'required|numeric',
+            'door_no' => 'numeric',
+            'street_name' => 'nullable|string',
+            'area' => 'nullable|string',
+            'contact_no' => 'nullable|numeric',
+            'contact_person' => 'nullable|numeric',
+            'building_stage' => 'nullable|string',
+            'requirement_qty' => 'nullable|numeric',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        try {
+            $imagePath = null;
+
+            if ($request->hasFile('img')) {
+                $file = $request->file('img');
+                $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = public_path('storage/uploads/site_images');
+
+                if (!file_exists($path)) {
+                    mkdir($path, 0775, true);
+                }
+
+                $file->move($path, $filename);
+
+                $imagePath = 'uploads/site_images/' . $filename;
+            }
+
+            $visit = SiteEntry::create([
+                'promotor_type_id' => $request->promotor_type_id,
+                'site_id' => $request->site_id ?? null,
+                'site_name' => $request->site_name,
+                'executive_id' => $request->executive_id,
+                'dealer_id' => $request->dealer_id,
+                'promotor_id' => $request->promotor_id,
+                'brand_id' => $request->brand_id ?? null,
+                'visit_date' => $request->visit_date,
+                'img' => $imagePath,
+                'lat' => $request->lat,
+                'long' => $request->long,
+                'state_id' => $request->state_id,
+                'district_id' => $request->district_id,
+                'pincode_id' => $request->pincode_id,
+                'area' => $request->area,
+                'door_no' => $request->door_no,
+                'street_name' => $request->street_name,
+                'building_stage' => $request->building_stage,
+                'floor_stage' => $request->floor_stage ?? null,
+                'contact_no' => $request->contact_no,
+                'contact_person' => $request->contact_person,
+                'requirement_qty' => $request->requirement_qty,
+            ]);
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Promotor visit created successfully.',
+                'data' => $visit
+            ], 201);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'An error occurred while creating promotor visit.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

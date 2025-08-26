@@ -227,10 +227,25 @@ class DealersStockManagementController extends Controller
         }
 
         $promotor_sale_entries = $query->orderBy('id', 'desc')->get();
+        $promotor_ids = $promotor_sale_entries->pluck('promotor_id');
+        $promotor_site_details = SiteEntry::with([
+            'promotor',
+            'executive',
+            'dealer',
+            'state',
+            'district',
+            'pincode',
+            'promotorType'
+        ])
+            ->whereIn('promotor_id', $promotor_ids)
+            ->whereNull('deleted_at')
+            ->get()
+            ->groupBy('promotor_id');
+
         $dealers = Dealers::whereNull('deleted_at')->get();
         $promotors = Promotor::whereNull('deleted_at')->get();
 
-        return view('activity.stocks.sale_entry_approval', compact('promotor_sale_entries', 'dealers', 'promotors'));
+        return view('activity.stocks.sale_entry_approval', compact('promotor_sale_entries', 'dealers', 'promotors', 'promotor_site_details'));
     }
 
     public function sale_entry_approval_or_unapproval(Request $request, $id)

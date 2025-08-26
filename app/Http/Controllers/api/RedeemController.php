@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Promotor;
 use App\Models\PromotorRedeemedGifts;
+use App\Models\PromotorRedeemProduct;
+use App\Models\PromotorSaleEntry;
 use App\Models\SiteEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -224,6 +226,99 @@ class RedeemController extends Controller
             'message' => 'Promotors Gift Products fetched successfully',
             'promotor_current_points' => $availablePoints,
             'data' => $products,
+        ]);
+    }
+
+    public function redeem_send_otp(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'promotor_id' => 'required|exists:promotors,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $promotor = Promotor::where('id', $request->promotor_id)->whereNull('deleted_at')->first();
+
+        if (!$promotor) {
+            return response()->json(['status' => false, 'message' => 'Promotor not found'], 404);
+        }
+
+        $otp = rand(100000, 999999);
+        $promotor->otp = $otp;
+        $promotor->otp_generated_at = now();
+        $promotor->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP sent successfully to the Promotor',
+            'otp' => $otp
+        ]);
+    }
+
+    public function redeem_verify_otp(Request $request)
+    {
+        //request dealer id , executive id , promotor id , product id
+        $validator = Validator::make($request->all(), [
+            'promotor_id' => 'required|exists:promotors,id',
+            'product_id' => 'required|exists:products,id',
+            'otp' => 'required|digits:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $promotor = Promotor::where('id', $request->promotor_id)->whereNull('deleted_at')->first();
+        $product = Product::where('id', $request->product_id)->whereNull('deleted_at')->first();
+
+        if (!$promotor) {
+            return response()->json(['status' => false, 'message' => 'Promotor not found'], 404);
+        }
+
+        if (!$product) {
+            return response()->json(['status' => false, 'message' => 'Product not found'], 404);
+        }
+
+        if ($promotor->otp != $request->otp) {
+            return response()->json(['status' => false, 'message' => 'Invalid OTP'], 400);
+        }
+
+        if (now()->diffInMinutes($promotor->otp_generated_at) > 5) {
+            return response()->json(['status' => false, 'message' => 'OTP expired'], 400);
+        }
+
+        // $promotor->otp = null;
+        // $promotor->otp_generated_at = null;
+        // $promotor->save();
+
+        $promotor_redeem_product = new PromotorRedeemProduct();
+        $promotor_redeem_product->dealer_id = $request->promotor_id ?? NULL;
+        $promotor_redeem_product->executive_id = $request->executive_id ?? NULL;
+        $promotor_redeem_product->promotor_id = $request->promotor_id;
+        $promotor_redeem_product->product_id = $request->product_id;
+        $promotor_redeem_product->product_code = $product->product_code ?? NULL;
+        $promotor_redeem_product->product_name = $product->product_name ?? NULL;
+        $promotor_redeem_product->redeemed_date = now();
+        $promotor_redeem_product->promotor_points = $promotor->points ?? NULL;
+
+        $promotor_redeem_product->product_redeem_points = $product->points ?? NULL;
+        $promotor_redeem_product->balance_promotor_points = NULL;
+        $promotor_redeem_product->approved_status = '0';
+        $promotor_redeem_product->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP verified successfully and sale entry created',
+            'data' => $promotor_redeem_product ?? [],
         ]);
     }
 }

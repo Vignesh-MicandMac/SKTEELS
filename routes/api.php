@@ -51,4 +51,6 @@ Route::get('/points-based-gifts-list', [RedeemController::class, 'points_based_g
 Route::post('/redeemed-gifts-list', [RedeemController::class, 'store']);
 Route::get('/promotor-redeemed-gifts', [RedeemController::class, 'show']);
 Route::get('/promotor-sites', [RedeemController::class, 'create']);
+Route::post('/redeem-send-otp', [RedeemController::class, 'redeem_send_otp']);
+Route::post('/redeem-verify-otp', [RedeemController::class, 'redeem_verify_otp']);
 // });

@@ -106,6 +106,7 @@
                         <th>Quantity</th>
                         <th>Obtained Points</th>
                         <th>Approved Status</th>
+                        <th>Site Details</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -128,6 +129,21 @@
                             <span class="badge bg-warning">Pending</span>
                             @endif
                         </td>
+
+
+
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#siteModal"
+                                data-sites='@json($promotor_site_details[$sale_entry->promotor_id] ?? [])'>
+                                View
+                            </button>
+                        </td>
+
+
+
+
                         <td>
                             <div class="d-flex gap-2">
 
@@ -158,6 +174,27 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="siteModal" tabindex="-1" aria-labelledby="siteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="siteModalLabel">Site Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="siteModalBody">
+                <!-- JS will populate site details here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 @endsection
 
 @push('scripts')
@@ -271,6 +308,60 @@
             }
         });
     }
+
+    //SITE DETAILS
+    var siteModal = document.getElementById('siteModal');
+
+    siteModal.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var sites = JSON.parse(button.getAttribute('data-sites'));
+        var modalBody = siteModal.querySelector('#siteModalBody');
+
+        if (!sites.length) {
+            modalBody.innerHTML = '<p>No sites available.</p>';
+            return;
+        }
+
+        var content = '';
+
+        sites.forEach(function(site, index) {
+            content += `
+            <h6 class="mb-2" style="font-size: 0.95rem;">Site ${index + 1}: ${site.site_name}</h6>
+            <div class="container-fluid mb-2 p-2" style="font-size: 0.85rem; line-height: 1.3;">
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Dealer:</strong> ${site.dealer?.name ?? 'N/A'}</div>
+                    <div class="col-md-6"><strong>Executive:</strong> ${site.executive?.name ?? 'N/A'}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Promotor Type:</strong> ${site.promotor_type?.promotor_type ?? 'N/A'}</div>
+                    <div class="col-md-6"><strong>Promotor:</strong> ${site.promotor?.name ?? 'N/A'}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Contact:</strong> ${site.contact_person ?? ''} / ${site.contact_no ?? ''}</div>
+                    <div class="col-md-6"><strong>Visit Date:</strong> ${site.visit_date ?? 'N/A'}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Address:</strong> ${site.area ?? ''}, ${site.door_no ?? ''}, ${site.street_name ?? ''}</div>
+                    <div class="col-md-6"><strong>Building/Floor:</strong> ${site.building_stage ?? ''}, ${site.floor_stage ?? ''}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>Latitude:</strong> ${site.lat ?? ''}</div>
+                    <div class="col-md-6"><strong>Longitude:</strong> ${site.long ?? ''}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6"><strong>State / District / Pincode:</strong> ${site.state?.state_name ?? ''} / ${site.district?.district_name ?? ''} / ${site.pincode?.pincode ?? ''}</div>
+                    <div class="col-md-6"><strong>Requirement Qty:</strong> ${site.requirement_qty ?? 'N/A'}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">${site.img ? `<strong>Image:</strong><br><img src="/storage/${site.img}" class="img-fluid rounded" style="max-width:150px;">` : ''}</div>
+                </div>
+            </div>
+            <hr style="margin: 0.5rem 0;">`;
+        });
+
+        modalBody.innerHTML = content;
+
+    });
 </script>
 <style>
     .dataTables_wrapper .dataTables_filter input {
