@@ -137,8 +137,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [DealersController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [DealersController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [DealersController::class, 'destroy'])->name('destroy');
-        Route::get('/get-districts/{state_id}', [DealersController::class, 'getDistricts']);
-        Route::get('/get-pincodes/{district_id}', [DealersController::class, 'getPincodes']);
+        Route::get('/get-districts/{state_id}', [DealersController::class, 'getDistricts'])->name('districts');
+        Route::get('/get-pincodes/{district_id}', [DealersController::class, 'getPincodes'])->name('pincodes');
     });
 
     //Executives
