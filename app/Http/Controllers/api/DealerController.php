@@ -285,10 +285,12 @@ class DealerController extends Controller
 
                 $imagePath = 'uploads/site_images/' . $filename;
             }
+            $lastSiteId = SiteEntry::max('site_id');
+            $newSiteId = $lastSiteId ? $lastSiteId + 1 : 1000;
 
             $visit = SiteEntry::create([
                 'promotor_type_id' => $request->promotor_type_id,
-                'site_id' => $request->site_id ?? null,
+                'site_id' => $newSiteId,
                 'site_name' => $request->site_name,
                 'executive_id' => $request->executive_id,
                 'dealer_id' => $request->dealer_id,

@@ -103,8 +103,28 @@
                         </div>
                     </div>
                     <div>
-                        <div class="small mb-1">Total Redeem Count</div>
-                        <h5 class="mb-0">5</h5>
+                        <div class="small mb-1">Total Redeem</div>
+                        <h5 class="mb-0">{{$redeems}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Total Users Card -->
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar me-3">
+                        <div class="avatar-initial bg-dark rounded shadow">
+                            <i class="mdi mdi-account-group mdi-24px"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small mb-1">Total Users</div>
+                        <h5 class="mb-0">{{$users}}</h5>
                     </div>
                 </div>
             </div>

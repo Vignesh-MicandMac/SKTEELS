@@ -38,6 +38,7 @@ Route::get('/districts', [DealerController::class, 'getDistricts']);
 Route::get('/pincodes', [DealerController::class, 'getPincodes']);
 Route::post('/get-mapped-promotors', [DealerController::class, 'getMappedPromotors']);
 Route::post('/add-promotors', [DealerController::class, 'add_promotors']);
+Route::post('/site-entry', [DealerController::class, 'site_entry']);
 
 //Executives
 Route::get('/executives-list', [ExecutivesController::class, 'index']);

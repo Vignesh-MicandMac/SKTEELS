@@ -337,19 +337,19 @@
                     <div class="col-md-6"><strong>Promotor:</strong> ${site.promotor?.name ?? 'N/A'}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6"><strong>Contact:</strong> ${site.contact_person ?? ''} / ${site.contact_no ?? ''}</div>
+                    <div class="col-md-6"><strong>Contact:</strong> ${site.contact_person ?? 'N/A'} / ${site.contact_no ?? 'N/A'}</div>
                     <div class="col-md-6"><strong>Visit Date:</strong> ${site.visit_date ?? 'N/A'}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6"><strong>Address:</strong> ${site.area ?? ''}, ${site.door_no ?? ''}, ${site.street_name ?? ''}</div>
-                    <div class="col-md-6"><strong>Building/Floor:</strong> ${site.building_stage ?? ''}, ${site.floor_stage ?? ''}</div>
+                    <div class="col-md-6"><strong>Address:</strong> ${site.area ?? 'N/A'}, ${site.door_no ?? 'N/A'}, ${site.street_name ?? 'N/A'}</div>
+                    <div class="col-md-6"><strong>Building/Floor:</strong> ${site.building_stage ?? 'N/A'}, ${site.floor_stage ?? 'N/A'}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6"><strong>Latitude:</strong> ${site.lat ?? ''}</div>
-                    <div class="col-md-6"><strong>Longitude:</strong> ${site.long ?? ''}</div>
+                    <div class="col-md-6"><strong>Latitude:</strong> ${site.lat ?? 'N/A'}</div>
+                    <div class="col-md-6"><strong>Longitude:</strong> ${site.long ?? 'N/A'}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6"><strong>State / District / Pincode:</strong> ${site.state?.state_name ?? ''} / ${site.district?.district_name ?? ''} / ${site.pincode?.pincode ?? ''}</div>
+                    <div class="col-md-6"><strong>State / District / Pincode:</strong> ${site.state?.state_name ?? 'N/A'} / ${site.district?.district_name ?? 'N/A'} / ${site.pincode?.pincode ?? 'N/A'}</div>
                     <div class="col-md-6"><strong>Requirement Qty:</strong> ${site.requirement_qty ?? 'N/A'}</div>
                 </div>
                 <div class="row mb-3">

@@ -49,7 +49,7 @@
                         <td>{{ $site_entry->long ?? 'N/A'}}</td>
                         <td>
                             @if($site_entry->img)
-                            <img src="{{ asset('storage/' . $site_entry->img_path) }}" alt="Image" class="product-img">
+                            <img src="{{ asset('storage/' . $site_entry->img) }}" alt="Image" class="product-img">
                             @else
                             <span class="text-muted">N/A</span>
                             @endif

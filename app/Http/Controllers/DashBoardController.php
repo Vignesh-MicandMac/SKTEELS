@@ -6,6 +6,8 @@ use App\Models\Dealers;
 use App\Models\Executive;
 use App\Models\Product;
 use App\Models\Promotor;
+use App\Models\PromotorRedeemProduct;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashBoardController extends Controller
@@ -19,7 +21,9 @@ class DashBoardController extends Controller
         $executives = Executive::whereNull('deleted_at')->count();
         $promotors = Promotor::whereNull('deleted_at')->count();
         $products = Product::whereNull('deleted_at')->count();
-        return view('dashboard', compact('dealers', 'executives', 'promotors', 'products'));
+        $users = User::whereNull('deleted_at')->count();
+        $redeems = PromotorRedeemProduct::where('approved_status', 1)->whereNull('deleted_at')->count();
+        return view('dashboard', compact('dealers', 'executives', 'promotors', 'products', 'redeems', 'users'));
     }
 
     /**
