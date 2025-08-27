@@ -161,6 +161,7 @@ class DealerController extends Controller
             'img_path'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'dealer_id'         => 'required|array',
             'dealer_id.*'       => 'exists:dealers,id',
+            'executive_id'       => 'nullable|exists:executives,id',
         ], [
             'mobile.digits'     => 'Mobile number must be 10 digits.',
             'aadhar_no.digits'  => 'Aadhar number must be 12 digits.',
