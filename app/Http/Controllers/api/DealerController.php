@@ -4,12 +4,15 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dealers;
+use App\Models\DealersStock;
 use App\Models\District;
 use App\Models\Pincode;
 use App\Models\Promotor;
 use App\Models\PromotorDealerMapping;
+use App\Models\PromotorSaleEntry;
 use App\Models\SiteEntry;
 use App\Models\States;
+use App\Models\StocksPoint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -116,7 +119,7 @@ class DealerController extends Controller
         ]);
     }
 
-    public function getMappedPromotors(Request $request)
+    public function getDealerPromotors(Request $request)
     {
         $dealer_id = $request->dealer_id;
 
@@ -128,12 +131,39 @@ class DealerController extends Controller
         }
 
         $mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)->whereNull('deleted_at')->pluck('promotor_id');
-        $mapped_promotors = Promotor::whereIn('id', $mapped_promotor_ids)->where('approval_status', 1)->whereNull('deleted_at')->get();
+        $mapped_promotors = Promotor::whereIn('id', $mapped_promotor_ids)->where('approval_status', '1')->whereNull('deleted_at')->get();
 
         if ($mapped_promotors->isEmpty()) {
             return response()->json([
                 'status' => false,
                 'message' => 'No promotors mapped to this dealer'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data fetched successfully',
+            'mapped_promotors' => $mapped_promotors
+        ], 200);
+    }
+
+    public function getExecutivePromotors(Request $request)
+    {
+        $executive_id = $request->executive_id;
+
+        if (!$executive_id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Executive ID is required'
+            ], 400);
+        }
+
+        $mapped_promotors = Promotor::where('executive_id', $executive_id)->where('approval_status', '1')->whereNull('deleted_at')->get();
+
+        if ($mapped_promotors->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No promotors mapped to this executive'
             ], 404);
         }
 
@@ -289,7 +319,7 @@ class DealerController extends Controller
             $lastSiteId = SiteEntry::max('site_id');
             $newSiteId = $lastSiteId ? $lastSiteId + 1 : 1000;
 
-            $visit = SiteEntry::create([
+            $site = SiteEntry::create([
                 'promotor_type_id' => $request->promotor_type_id,
                 'site_id' => $newSiteId,
                 'site_name' => $request->site_name,
@@ -318,13 +348,91 @@ class DealerController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Promotor visit created successfully.',
-                'data' => $visit
-            ], 201);
+                'data' => $site
+            ], 200);
         } catch (\Exception $e) {
 
             return response()->json([
                 'status' => false,
                 'message' => 'An error occurred while creating promotor visit.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function dealer_available_stocks(Request $request)
+    {
+        $dealerId = $request->dealer_id;
+
+        if (!$dealerId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dealer ID is required'
+            ], 400);
+        }
+
+        $total_current_stock = DealersStock::where('dealer_id', $dealerId)->whereNull('deleted_at')->orderBy('id', 'desc')->first();
+
+        if (!$total_current_stock) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No stocks found for this Dealer'
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fetched successfully.',
+            'current_stock' => $total_current_stock->total_current_stock
+        ], 200);
+    }
+
+    public function sale_entry(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'promotor_id' => 'required|integer|exists:promotors,id',
+            'dealer_id' => 'required|integer|exists:dealers,id',
+            'executive_id' => 'nullable|integer|exists:executives,id',
+            'quantity' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $quantity = $request->quantity;
+
+            $stockPoint = StocksPoint::where('kg', '>=', $quantity)->orderBy('kg', 'asc')->first();
+
+            if (!$stockPoint) {
+                $stockPoint = StocksPoint::orderBy('kg', 'desc')->first();
+            }
+            $obtainedPoints = ($quantity / $stockPoint->kg) * $stockPoint->points;
+
+            $saleEntry = PromotorSaleEntry::create([
+                'promotor_id' => $request->promotor_id ?? NULL,
+                'dealer_id' => $request->dealer_id ?? NULL,
+                'executive_id' => $request->executive_id ?? NULL,
+                'quantity' => $request->quantity,
+                'approved_status' => '0',
+                'obtained_points' => $obtainedPoints,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Sale entry created successfully',
+                'data' => $saleEntry
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'An error occurred while creating sale entry',
                 'error' => $e->getMessage()
             ], 500);
         }
