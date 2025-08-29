@@ -58,13 +58,13 @@
 
                 @if(hasPermission(['view_promotors_type']))
                 <li class="menu-item"><a href="{{ url('masters/promotors_type') }}" class="menu-link">
-                        <div>Promotors Type</div>
+                        <div>Influencer Type</div>
                     </a></li>
                 @endif
 
                 @if(hasPermission(['view_promotors']))
                 <li class="menu-item"><a href="{{ url('masters/promotors') }}" class="menu-link">
-                        <div>Promotors</div>
+                        <div>Influencer</div>
                     </a></li>
                 @endif
 
@@ -124,7 +124,7 @@
 
             @if(hasPermission(['view_promotors_approval']))
             <li class="menu-item"><a href="{{ url('activity/stocks/promotors-approval') }}" class="menu-link">
-                    <div>Promotors Approval</div>
+                    <div>Influencer Approval</div>
                 </a></li>
             @endif
 

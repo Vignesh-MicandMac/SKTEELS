@@ -48,7 +48,8 @@ class RedeemController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'promotor_id' => 'required|integer|exists:promotors,id',
+            // 'promotor_id' => 'required|integer|exists:promotors,id',
+            'executive_id' => 'required|integer|exists:executives,id',
         ]);
 
         if ($validator->fails()) {
@@ -59,7 +60,7 @@ class RedeemController extends Controller
             ], 422);
         }
 
-        $promotor_sites = SiteEntry::where('promotor_id', $request->promotor_id)->whereNull('deleted_at')->get()
+        $promotor_sites = SiteEntry::where('executive_id', $request->executive_id)->whereNull('deleted_at')->get()
             ->map(function ($promotor_sites) {
                 $promotor_sites->img = asset('storage/' . $promotor_sites->img);
                 return $promotor_sites;
@@ -68,7 +69,7 @@ class RedeemController extends Controller
         if ($promotor_sites->isEmpty()) {
             return response()->json([
                 'status' => true,
-                'message' => 'Sites Not found for this Promotor Id',
+                'message' => 'Sites Not found',
                 'data' => $promotor_sites,
             ], 200);
         }
@@ -266,6 +267,7 @@ class RedeemController extends Controller
         //request dealer id , executive id , promotor id , product id
         $validator = Validator::make($request->all(), [
             'promotor_id' => 'required|exists:promotors,id',
+            'dealer_id' => 'required|exists:dealers,id',
             'product_id' => 'required|exists:products,id',
             'otp' => 'required|digits:6',
         ]);
@@ -299,26 +301,34 @@ class RedeemController extends Controller
         // $promotor->otp = null;
         // $promotor->otp_generated_at = null;
         // $promotor->save();
+        if ($promotor->points >= $product->points) {
 
-        $promotor_redeem_product = new PromotorRedeemProduct();
-        $promotor_redeem_product->dealer_id = $request->promotor_id ?? NULL;
-        $promotor_redeem_product->executive_id = $request->executive_id ?? NULL;
-        $promotor_redeem_product->promotor_id = $request->promotor_id;
-        $promotor_redeem_product->product_id = $request->product_id;
-        $promotor_redeem_product->product_code = $product->product_code ?? NULL;
-        $promotor_redeem_product->product_name = $product->product_name ?? NULL;
-        $promotor_redeem_product->redeemed_date = now();
-        $promotor_redeem_product->promotor_points = $promotor->points ?? NULL;
+            $promotor_redeem_product = new PromotorRedeemProduct();
+            $promotor_redeem_product->dealer_id = $request->dealer_id ?? NULL;
+            $promotor_redeem_product->executive_id = $request->executive_id ?? NULL;
+            $promotor_redeem_product->promotor_id = $request->promotor_id;
+            $promotor_redeem_product->product_id = $request->product_id;
+            $promotor_redeem_product->product_code = $product->product_code ?? NULL;
+            $promotor_redeem_product->product_name = $product->product_name ?? NULL;
+            $promotor_redeem_product->redeemed_date = now();
+            $promotor_redeem_product->promotor_points = $promotor->points ?? NULL;
 
-        $promotor_redeem_product->product_redeem_points = $product->points ?? NULL;
-        $promotor_redeem_product->balance_promotor_points = NULL;
-        $promotor_redeem_product->approved_status = '0';
-        $promotor_redeem_product->save();
+            $promotor_redeem_product->product_redeem_points = $product->points ?? NULL;
+            $promotor_redeem_product->balance_promotor_points = $promotor->points - $product->points;
+            $promotor_redeem_product->approved_status = '0';
+            $promotor_redeem_product->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'OTP verified successfully and sale entry created',
-            'data' => $promotor_redeem_product ?? [],
-        ]);
+            $promotor->update([
+                'points' => $promotor->points - $product->points
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'OTP verified successfully and sale entry created',
+                'data' => $promotor_redeem_product ?? [],
+            ]);
+        } else {
+            return response()->json(['error' => 'Rededem Points exceeded the Promotor points'], 422);
+        }
     }
 }

@@ -53,7 +53,7 @@ Route::delete('executives/{id}', [ExecutivesController::class, 'destroy']);
 //Redeem 
 Route::get('/overall-gift-list', [RedeemController::class, 'index']);
 Route::get('/points-based-gifts-list', [RedeemController::class, 'points_based_gifts']);
-Route::post('/redeemed-gifts-list', [RedeemController::class, 'store']);
+Route::post('/add-redeemed-gifts', [RedeemController::class, 'store']);
 Route::get('/promotor-redeemed-gifts', [RedeemController::class, 'show']);
 Route::get('/promotor-sites', [RedeemController::class, 'create']);
 Route::post('/redeem-send-otp', [RedeemController::class, 'redeem_send_otp']);

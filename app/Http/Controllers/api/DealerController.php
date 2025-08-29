@@ -132,6 +132,10 @@ class DealerController extends Controller
 
         $mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)->whereNull('deleted_at')->pluck('promotor_id');
         $mapped_promotors = Promotor::whereIn('id', $mapped_promotor_ids)->where('approval_status', '1')->whereNull('deleted_at')->get();
+        $mapped_promotors = $mapped_promotors->map(function ($promotor) {
+            $promotor->points = (int) $promotor->points;
+            return $promotor;
+        });
 
         if ($mapped_promotors->isEmpty()) {
             return response()->json([
@@ -273,15 +277,15 @@ class DealerController extends Controller
         $validator = Validator::make($request->all(), [
             'promotor_type_id' => 'required|integer',
             'site_name' => 'required|string',
-            'executive_id' => 'required|integer',
-            'dealer_id' => 'integer',
-            'promotor_id' => 'required|integer',
+            'promotor_id' => 'required|integer|exists:promotors,id',
+            'dealer_id' => 'nullable|integer|exists:dealers,id',
+            'executive_id' => 'required|integer|exists:executives,id',
+            'state_id' => 'required|numeric|exists:states,id',
+            'district_id' => 'required|numeric|exists:districts,id',
+            'pincode_id' => 'required|numeric|exists:pincodes,id',
             'visit_date' => 'required|date',
             'lat' => 'required|numeric',
             'long' => 'required|numeric',
-            'state_id' => 'required|numeric',
-            'district_id' => 'required|numeric',
-            'pincode_id' => 'required|numeric',
             'door_no' => 'numeric',
             'street_name' => 'nullable|string',
             'area' => 'nullable|string',
@@ -389,11 +393,12 @@ class DealerController extends Controller
 
     public function sale_entry(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'promotor_id' => 'required|integer|exists:promotors,id',
             'dealer_id' => 'required|integer|exists:dealers,id',
             'executive_id' => 'nullable|integer|exists:executives,id',
-            'quantity' => 'required|numeric',
+            'quantity' => 'required|numeric|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -406,27 +411,46 @@ class DealerController extends Controller
         try {
             $quantity = $request->quantity;
 
+            // pick the nearest stock point >= request OR fallback to max available
             $stockPoint = StocksPoint::where('kg', '>=', $quantity)->orderBy('kg', 'asc')->first();
-
             if (!$stockPoint) {
                 $stockPoint = StocksPoint::orderBy('kg', 'desc')->first();
             }
+
             $obtainedPoints = ($quantity / $stockPoint->kg) * $stockPoint->points;
 
+            $dealer_stock = DealersStock::where('dealer_id', $request->dealer_id)->orderBy('id', 'desc')->first();
+
+
+            if (!$dealer_stock || $dealer_stock->total_current_stock <= $quantity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Requested quantity exceeds available dealer stock',
+                ], 400);
+            }
+
             $saleEntry = PromotorSaleEntry::create([
-                'promotor_id' => $request->promotor_id ?? NULL,
-                'dealer_id' => $request->dealer_id ?? NULL,
-                'executive_id' => $request->executive_id ?? NULL,
-                'quantity' => $request->quantity,
+                'promotor_id' => $request->promotor_id,
+                'dealer_id' => $request->dealer_id,
+                'executive_id' => $request->executive_id ?? null,
+                'quantity' => $quantity,
                 'approved_status' => '0',
                 'obtained_points' => $obtainedPoints,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
+            $balance_stock = $dealer_stock->total_current_stock - $quantity;
+
+            $dealer_stock->update([
+                'promoter_sales' => $quantity,
+                'balance_stock' => $balance_stock,
+                'total_current_stock' => $balance_stock,
+            ]);
+
             return response()->json([
                 'status' => true,
-                'message' => 'Sale entry created successfully',
+                'message' => 'Sale entry created and Dealer Stock Updated successfully',
                 'data' => $saleEntry
             ]);
         } catch (\Exception $e) {
@@ -436,5 +460,74 @@ class DealerController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+
+        // $validator = Validator::make($request->all(), [
+        //     'promotor_id' => 'required|integer|exists:promotors,id',
+        //     'dealer_id' => 'required|integer|exists:dealers,id',
+        //     'executive_id' => 'nullable|integer|exists:executives,id',
+        //     'quantity' => 'required|numeric',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'errors' => $validator->errors()
+        //     ], 422);
+        // }
+
+        // try {
+        //     $quantity = $request->quantity;
+
+        //     $stockPoint = StocksPoint::where('kg', '>=', $quantity)->orderBy('kg', 'asc')->first();
+
+        //     if (!$stockPoint) {
+        //         $stockPoint = StocksPoint::orderBy('kg', 'desc')->first();
+        //     }
+        //     $obtainedPoints = ($quantity / $stockPoint->kg) * $stockPoint->points;
+
+        //     $dealer = PromotorSaleEntry::findOrFail($request->dealer_id);
+
+        //     //update dealer stock
+        //     $update_dealer_stock = DealersStock::where('dealer_id', $dealer->dealer_id)->orderBy('id', 'desc')->first();
+
+        //     if ($update_dealer_stock && $update_dealer_stock->total_stock >= $dealer->quantity) {
+
+        //         $saleEntry = PromotorSaleEntry::create([
+        //             'promotor_id' => $request->promotor_id ?? NULL,
+        //             'dealer_id' => $request->dealer_id ?? NULL,
+        //             'executive_id' => $request->executive_id ?? NULL,
+        //             'quantity' => $request->quantity,
+        //             'approved_status' => '0',
+        //             'obtained_points' => $obtainedPoints,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+
+        //         $balance_stock = $update_dealer_stock->total_stock - $dealer->quantity;
+
+        //         $update_dealer_stock->update([
+        //             'promoter_sales' => $dealer->quantity,
+        //             'balance_stock' => $balance_stock,
+        //             'total_current_stock' => $balance_stock,
+        //         ]);
+        //     } else {
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'Requested Quantity is exceeded the available dealer stock',
+        //         ]);
+        //     }
+
+        //     return response()->json([
+        //         'status' => true,
+        //         'message' => 'Sale entry created and Dealer Stock Updated successfully',
+        //         'data' => $saleEntry
+        //     ]);
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'An error occurred while creating sale entry',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
     }
 }

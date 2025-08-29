@@ -172,11 +172,17 @@ class DealersStockManagementController extends Controller
             return redirect()->back()->with('warning', 'Stock is 0. Cannot update.');
         }
 
-        if ($dealer_stock->closing_stock_updated_at->toDateString() === now()->toDateString()) {
+        // if ($dealer_stock->closing_stock_updated_at->toDateString() === now()->toDateString()) {
+        //     return redirect()->back()->with('warning', 'You have already updated the stock today.');
+        // }
+
+        if ($dealer_stock->closing_stock_updated_at && $dealer_stock->closing_stock_updated_at->toDateString() === now()->toDateString()) {
             return redirect()->back()->with('warning', 'You have already updated the stock today.');
         }
 
-
+        if ($request->stock > $dealer_stock->total_current_stock) {
+            return redirect()->back()->with('warning', 'Requested stock exceeds available stock.');
+        }
         $closing_stock =  $dealer_stock->total_current_stock - $request->stock;
 
         $dealer_stock->update([
@@ -257,31 +263,31 @@ class DealersStockManagementController extends Controller
             $sale_entry = PromotorSaleEntry::findOrFail($id);
 
             //update dealer stock
-            $update_approved_stock = DealersStock::where('dealer_id', $sale_entry->dealer_id)->orderBy('id', 'desc')->first();
-            $balance_stock = $update_approved_stock->total_stock - $sale_entry->quantity;
+            // $update_approved_stock = DealersStock::where('dealer_id', $sale_entry->dealer_id)->orderBy('id', 'desc')->first();
+            // $balance_stock = $update_approved_stock->total_stock - $sale_entry->quantity;
 
-            if ($update_approved_stock && $update_approved_stock->total_stock >= $sale_entry->quantity) {
+            // if ($update_approved_stock && $update_approved_stock->total_stock >= $sale_entry->quantity) {
 
-                $sale_entry->approved_status = $request->approved_status;
-                $sale_entry->save();
+            $sale_entry->approved_status = $request->approved_status;
+            $sale_entry->save();
 
-                $update_approved_stock->update([
-                    'promoter_sales' => $sale_entry->quantity,
-                    'balance_stock' => $balance_stock,
-                    'total_current_stock' => $balance_stock,
-                ]);
+            //     $update_approved_stock->update([
+            //         'promoter_sales' => $sale_entry->quantity,
+            //         'balance_stock' => $balance_stock,
+            //         'total_current_stock' => $balance_stock,
+            //     ]);
 
-                //update promotor points
-                $update_promotor_points = Promotor::where('id', $sale_entry->promotor_id)->first();
-                $total_promotor_points = ($update_promotor_points->points ?? 0) + $sale_entry->obtained_points;
+            //update promotor points
+            $update_promotor_points = Promotor::where('id', $sale_entry->promotor_id)->orderBy('id', 'desc')->first();
+            $total_promotor_points = ($update_promotor_points->points ?? 0) + $sale_entry->obtained_points;
 
-                $update_promotor_points->update([
-                    'points' => $total_promotor_points,
-                ]);
-                return response()->json(['success' => 'Approved successfully!']);
-            } else {
-                return response()->json(['error' => 'Sale quantity exceeded the total stock by ' . $balance_stock . '!'], 422);
-            }
+            $update_promotor_points->update([
+                'points' => $total_promotor_points,
+            ]);
+            return response()->json(['success' => 'Approved successfully!']);
+            // } else {
+            //     return response()->json(['error' => 'Sale quantity exceeded the total stock by ' . $balance_stock . '!'], 422);
+            // }
         }
 
         if ($request->approved_status == 2) {
@@ -366,21 +372,21 @@ class DealersStockManagementController extends Controller
 
             $gift_product = PromotorRedeemProduct::where('id', $id)->whereNull('deleted_at')->first();
             $promotor = Promotor::where('id', $gift_product->promotor_id)->whereNull('deleted_at')->first();
-            $reduce_promotor_point = $promotor->points - $gift_product->product_redeem_points;
+            // $reduce_promotor_point = $promotor->points - $gift_product->product_redeem_points;
 
-            if ($gift_product->product_redeem_points <= $promotor->points) {
+            // if ($gift_product->product_redeem_points <= $promotor->points) {
 
-                $promotor->update([
-                    'points' => $reduce_promotor_point
-                ]);
+            //     $promotor->update([
+            //         'points' => $reduce_promotor_point
+            //     ]);
                 $gift_product->update([
                     'approved_status' => $request->approved_status
                 ]);
 
                 return response()->json(['success' => 'Redeem Approved successfully!']);
-            } else {
-                return response()->json(['error' => 'Rededem Points exceeded the Promotor points by ' . $reduce_promotor_point . '!'], 422);
-            }
+            // } else {
+            //     return response()->json(['error' => 'Rededem Points exceeded the Promotor points by ' . $reduce_promotor_point . '!'], 422);
+            // }
         }
 
         if ($request->approved_status == 2) {
