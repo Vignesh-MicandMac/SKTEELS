@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\DealersStock;
 use App\Models\District;
+use App\Models\Executive;
+use App\Models\ExecutiveDealerMapping;
 use App\Models\Pincode;
 use App\Models\Promotor;
 use App\Models\PromotorDealerMapping;
@@ -121,13 +123,15 @@ class DealerController extends Controller
 
     public function getDealerPromotors(Request $request)
     {
-        $dealer_id = $request->dealer_id;
+        $validator = Validator::make($request->all(), [
+            'dealer_id' => 'required|integer|exists:dealers,id',
+        ]);
 
-        if (!$dealer_id) {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Dealer ID is required'
-            ], 400);
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)->whereNull('deleted_at')->pluck('promotor_id');
@@ -153,14 +157,19 @@ class DealerController extends Controller
 
     public function getExecutivePromotors(Request $request)
     {
-        $executive_id = $request->executive_id;
 
-        if (!$executive_id) {
+        $validator = Validator::make($request->all(), [
+            'executive_id' => 'required|integer|exists:executives,id',
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Executive ID is required'
-            ], 400);
+                'errors' => $validator->errors()
+            ], 422);
         }
+
+        $executive_id = $request->executive_id;
 
         $mapped_promotors = Promotor::where('executive_id', $executive_id)->where('approval_status', '1')->whereNull('deleted_at')->get();
 
@@ -175,6 +184,39 @@ class DealerController extends Controller
             'status' => true,
             'message' => 'Data fetched successfully',
             'mapped_promotors' => $mapped_promotors
+        ], 200);
+    }
+
+    public function getExecutiveDealers(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'executive_id' => 'required|integer|exists:executives,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $executive_id = $request->executive_id;
+
+        $mapped_dealers = ExecutiveDealerMapping::where('executive_id', $executive_id)->whereNull('deleted_at')->pluck('dealer_id');
+        $mapped_dealers = Dealers::whereIn('id', $mapped_dealers)->whereNull('deleted_at')->get();
+
+        if ($mapped_dealers->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No dealers mapped to this executive'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data fetched successfully',
+            'mapped_dealers' => $mapped_dealers
         ], 200);
     }
 

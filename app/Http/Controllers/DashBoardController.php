@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dealers;
+use App\Models\DealersStock;
 use App\Models\Executive;
 use App\Models\Product;
 use App\Models\Promotor;
+use App\Models\PromotorRedeemedGifts;
 use App\Models\PromotorRedeemProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashBoardController extends Controller
 {
@@ -23,7 +26,26 @@ class DashBoardController extends Controller
         $products = Product::whereNull('deleted_at')->count();
         $users = User::whereNull('deleted_at')->count();
         $redeems = PromotorRedeemProduct::where('approved_status', 1)->whereNull('deleted_at')->count();
-        return view('dashboard', compact('dealers', 'executives', 'promotors', 'products', 'redeems', 'users'));
+
+        // Dealer stock data
+        $dealerStocks = DealersStock::select(
+            'dealer_id',
+            DB::raw('SUM(total_current_stock) as total_stock'),
+            DB::raw('SUM(closing_stock) as closing_stock')
+        )->groupBy('dealer_id')->with('dealer')->limit(20)->get();
+
+        // Daily sales trend
+        $salesTrend = DealersStock::select(
+            DB::raw('DATE(dispatch_date) as date'),
+            DB::raw('SUM(dispatch) as dispatch'),
+            DB::raw('SUM(promoter_sales) as promoter_sales'),
+            DB::raw('SUM(other_sales) as other_sales')
+        )->groupBy('date')->orderBy('date', 'asc')->get();
+
+        // Promotor points leaderboard
+        $promotorschart = Promotor::select('name', 'points')->orderByDesc('points')->limit(10)->get();
+
+        return view('dashboard', compact('dealers', 'executives', 'promotors', 'products', 'redeems', 'users', 'dealerStocks', 'salesTrend', 'promotorschart'));
     }
 
     /**

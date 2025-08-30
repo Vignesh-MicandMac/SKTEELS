@@ -39,6 +39,7 @@ Route::get('/districts', [DealerController::class, 'getDistricts']);
 Route::get('/pincodes', [DealerController::class, 'getPincodes']);
 Route::post('/get-dealer-promotors', [DealerController::class, 'getDealerPromotors']);
 Route::post('/get-executive-promotors', [DealerController::class, 'getExecutivePromotors']);
+Route::post('/get-executive-dealers', [DealerController::class, 'getExecutiveDealers']);
 Route::post('/add-promotors', [DealerController::class, 'add_promotors']);
 Route::post('/site-entry', [DealerController::class, 'site_entry']);
 Route::get('/available-stocks', [DealerController::class, 'dealer_available_stocks']);
