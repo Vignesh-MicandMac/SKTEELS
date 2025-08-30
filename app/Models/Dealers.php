@@ -43,6 +43,11 @@ class Dealers extends Model
     return $this->belongsTo(District::class, 'district');
   }
 
+  public function allPincode()
+  {
+    return $this->belongsTo(Pincode::class, 'pincode');
+  }
+
   public function promotorMappings()
   {
     return $this->hasMany(PromotorDealerMapping::class, 'dealer_id');

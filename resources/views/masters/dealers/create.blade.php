@@ -148,7 +148,7 @@
                 success: function(data) {
                     $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
                     $.each(data, function(key, value) {
-                        $('#pincode-select').append('<option value="' + value.pincode + '">' + value.pincode + '</option>');
+                        $('#pincode-select').append('<option value="' + value.id + '">' + value.pincode + '</option>');
                     });
                 }
             });

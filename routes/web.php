@@ -139,6 +139,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy/{id}', [DealersController::class, 'destroy'])->name('destroy');
         Route::get('/get-districts/{state_id}', [DealersController::class, 'getDistricts'])->name('districts');
         Route::get('/get-pincodes/{district_id}', [DealersController::class, 'getPincodes'])->name('pincodes');
+        Route::post('bulk-upload', [DealersController::class, 'bulkUpload'])->name('bulkUpload');
     });
 
     //Executives

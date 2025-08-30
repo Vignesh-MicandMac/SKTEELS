@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\masters;
 
 use App\Http\Controllers\Controller;
+use App\Imports\DealersImport;
 use App\Models\Dealers;
 use App\Models\District;
 use App\Models\Pincode;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DealersController extends Controller
 {
@@ -125,4 +127,18 @@ class DealersController extends Controller
         $pincodes = Pincode::where('district_id', $district_id)->get();
         return response()->json($pincodes);
     }
+
+    public function bulkUpload(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+    ]);
+
+    try {
+        Excel::import(new DealersImport, $request->file('file'));
+        return redirect()->route('masters.dealers.index')->with('success', 'Dealers uploaded successfully.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+    }
+}
 }

@@ -31,6 +31,9 @@ class AnalyticsController extends Controller
         $month = now()->month;
         $year  = now()->year;
 
+        $prevMonth = now()->subMonth()->month;
+        $prevYear  = now()->subMonth()->year;
+        // ================================ Current Month ================================
         $totalQuantity = PromotorSaleEntry::where('approved_status', '1')
             ->where('dealer_id', $request->dealer_id)
             ->whereMonth('created_at', $month)
@@ -42,6 +45,44 @@ class AnalyticsController extends Controller
         $mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)->whereMonth('created_at', $month)->whereYear('created_at', $year)->whereNull('deleted_at')->pluck('promotor_id');
         $totalPromotors = Promotor::whereIn('id', $mapped_promotor_ids)->where('approval_status', '1')->whereMonth('created_at', $month)->whereYear('created_at', $year)->count();
         $totalRedeems = PromotorRedeemProduct::where('dealer_id', $request->dealer_id)->whereMonth('created_at', $month)->whereYear('created_at', $year)->count();
+
+        // ========================== Previous Month ================================
+        $prevTotalQuantity = PromotorSaleEntry::where('approved_status', '1')
+            ->where('dealer_id', $request->dealer_id)
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->sum('quantity');
+
+        $prevTotalSaleEntry = PromotorSaleEntry::where('dealer_id', $request->dealer_id)
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->count();
+
+        $prev_mapped_promotor_ids = PromotorDealerMapping::where('dealer_id', $request->dealer_id)
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->whereNull('deleted_at')
+            ->pluck('promotor_id');
+
+        $prevTotalPromotors = Promotor::whereIn('id', $prev_mapped_promotor_ids)
+            ->where('approval_status', '1')
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->count();
+
+        $prevTotalRedeems = PromotorRedeemProduct::where('dealer_id', $request->dealer_id)
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->count();
+
+        // ================= GROWTH % =================
+        $growth = [
+            'sales_quantity_growth' => $this->calcGrowth($prevTotalQuantity, $totalQuantity),
+            'sales_entries_growth'  => $this->calcGrowth($prevTotalSaleEntry, $totalSaleEntry),
+            'promotors_growth'      => $this->calcGrowth($prevTotalPromotors, $totalPromotors),
+            'redeems_growth'        => $this->calcGrowth($prevTotalRedeems, $totalRedeems),
+        ];
+
 
         //OverAll sales and other data's
         $overAllQuantity = PromotorSaleEntry::where('approved_status', '1')->where('dealer_id', $request->dealer_id)->sum('quantity');
@@ -73,6 +114,7 @@ class AnalyticsController extends Controller
                 'total_sales_entries' => $totalSaleEntry,
                 'total_promotors' => $totalPromotors,
                 'total_redeems' => $totalRedeems,
+                'growth_percentage' => $growth,
                 'total_active_promotors' => $total_active_promotors,
                 'total_inactive_promotors' => $total_inactive_promotors,
                 'total_idle_promotors' => $total_idle_promotors,
@@ -137,6 +179,9 @@ class AnalyticsController extends Controller
         $month = now()->month;
         $year  = now()->year;
 
+        $prevMonth = now()->subMonth()->month;
+        $prevYear  = now()->subMonth()->year;
+        // ================================ Current Month ================================
         $totalQuantity = PromotorSaleEntry::where('approved_status', '1')
             ->where('executive_id', $request->executive_id)
             ->whereMonth('created_at', $month)
@@ -147,6 +192,27 @@ class AnalyticsController extends Controller
 
         $totalPromotors = Promotor::where('executive_id', $request->executive_id)->where('approval_status', '1')->whereMonth('created_at', $month)->whereYear('created_at', $year)->count();
         $totalRedeems = PromotorRedeemProduct::where('executive_id', $request->executive_id)->whereMonth('created_at', $month)->whereYear('created_at', $year)->count();
+
+        // ================================ Previous Month ===========================
+
+        $prevTotalQuantity = PromotorSaleEntry::where('approved_status', '1')
+            ->where('executive_id', $request->executive_id)
+            ->whereMonth('created_at', $prevMonth)
+            ->whereYear('created_at', $prevYear)
+            ->sum('quantity');
+
+        $prevTotalSaleEntry = PromotorSaleEntry::where('executive_id', $request->executive_id)->whereMonth('created_at', $prevMonth)->whereYear('created_at', $prevYear)->count();
+
+        $prevTotalPromotors = Promotor::where('executive_id', $request->executive_id)->where('approval_status', '1')->whereMonth('created_at', $prevMonth)->whereYear('created_at', $prevYear)->count();
+        $prevTotalRedeems = PromotorRedeemProduct::where('executive_id', $request->executive_id)->whereMonth('created_at', $prevMonth)->whereYear('created_at', $prevYear)->count();
+
+        // ================= GROWTH % =================
+        $growth = [
+            'sales_quantity_growth' => $this->calcGrowth($prevTotalQuantity, $totalQuantity),
+            'sales_entries_growth'  => $this->calcGrowth($prevTotalSaleEntry, $totalSaleEntry),
+            'promotors_growth'      => $this->calcGrowth($prevTotalPromotors, $totalPromotors),
+            'redeems_growth'        => $this->calcGrowth($prevTotalRedeems, $totalRedeems),
+        ];
 
         //OverAll sales and other data's
         $overAllQuantity = PromotorSaleEntry::where('approved_status', '1')->where('executive_id', $request->executive_id)->sum('quantity');
@@ -178,6 +244,7 @@ class AnalyticsController extends Controller
                 'total_sales_entries' => $totalSaleEntry,
                 'total_promotors' => $totalPromotors,
                 'total_redeems' => $totalRedeems,
+                'growth_percentage' => $growth,
                 'total_active_promotors' => $total_active_promotors,
                 'total_inactive_promotors' => $total_inactive_promotors,
                 'total_idle_promotors' => $total_idle_promotors,
@@ -188,5 +255,16 @@ class AnalyticsController extends Controller
                 'overall_redeems' => $overAllRedeems,
             ]
         ]);
+    }
+
+    private function calcGrowth($previous, $current)
+    {
+        if ($previous == 0 && $current > 0) {
+            return 100;
+        }
+        if ($previous == 0 && $current == 0) {
+            return 0;
+        }
+        return round((($current - $previous) / $previous) * 100, 2);
     }
 }
