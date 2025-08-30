@@ -64,4 +64,5 @@ Route::post('/redeem-verify-otp', [RedeemController::class, 'redeem_verify_otp']
 //ANALYTICS
 Route::post('/promotor-status-change', [AnalyticsController::class, 'promotor_status_change']);
 Route::get('/monthly-overall-dealer-sales', [AnalyticsController::class, 'getDealerMonlthySales_and_overAllSales']);
+Route::get('/monthly-overall-executive-sales', [AnalyticsController::class, 'getExecutiveMonlthySales_and_overAllSales']);
 // });
