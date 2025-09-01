@@ -76,7 +76,60 @@
 </div>
 </div>
 
+<!-- stocks Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="dealersTable">
+                <thead class="table-light">
+                    <tr>
+                        <th># No</th>
+                        <th>Dealer Name</th>
+                        <th>Open Balance</th>
+                        <th>Dispatch</th>
+                        <th>Total Stock</th>
+                        <th>Dispatch Date</th>
+                        <th>Influencer Sales</th>
+                        <th>Balance Stocks</th>
+                        <th>Closing Stocks</th>
+                        <th>Other Sales</th>
+                        <th>Closing Updated At</th>
+                        <th>Declined Stock</th>
+                        <th>Date Of Declined</th>
+                        <th>Updated Stock</th>
+                        <th>Previous Total Current Stock</th>
+                        <th>Total Current Stock</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
 
+                    @foreach($dealer_stocks as $key => $dealer_stock)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $dealer_stock->dealer->name ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->open_balance ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->dispatch ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->total_stock ?? 'N/A' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($dealer_stock->dispatch_date)->toDateString() ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->promoter_sales ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->balance_stock ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->closing_stock ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->other_sales ?? 'N/A'}}</td>
+                        <td>{{ \Carbon\Carbon::parse($dealer_stock->closing_stock_updated_at)->toDateString() ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->declined_stock ?? 'N/A'}}</td>
+                        <td>{{ \Carbon\Carbon::parse($dealer_stock->date_of_declined)->toDateString() ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->updated_stock ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->previous_total_current_stock ?? 'N/A'}}</td>
+                        <td>{{ $dealer_stock->total_current_stock ?? 'N/A'}}</td>
+                        <td>{{ \Carbon\Carbon::parse($dealer_stock->created_at)->toDateString() ?? 'N/A'}}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -103,6 +156,77 @@
             });
         });
     });
+
+    (function($) {
+        $(document).ready(function() {
+            // Check if DataTable is defined
+            if (!$.fn.DataTable) {
+                console.error('DataTable is not loaded. Check CDN or script inclusion.');
+                return;
+            }
+
+
+            // Initialize DataTable
+            $('#dealersTable').DataTable({
+                autoWidth: true,
+                responsive: true,
+                drawCallback: function() {
+                    $('.dataTables_paginate .pagination').addClass('pagination-sm');
+                },
+                // dom: '<"top"<"row"<"col-md-6"l><"col-md-6"f>>>rt<"bottom"<"row"<"col-md-6"i><"col-md-6"p>>>',
+                dom: '<"top"<"row"<"col-md-6"l><"col-md-6"f>>><"table-wrapper"rt><"bottom"<"row"<"col-md-6"i><"col-md-6"p>>>',
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search dealers...",
+                    lengthMenu: "Show _MENU_ entries",
+                    paginate: {
+                        previous: "<i class='mdi mdi-chevron-left'>",
+                        next: "<i class='mdi mdi-chevron-right'>"
+                    }
+                },
+                columnDefs: [{
+                        targets: 6, // Created At column (index 9)
+                        type: 'date-dd-mm-yyyy'
+                    },
+                    {
+                        targets: 7, // Actions column (index 10)
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                initComplete: function() {
+                    // Style the search input
+                    $('.dataTables_filter input').addClass('form-control form-control-sm');
+                    $('.dataTables_filter label').contents().filter(function() {
+                        return this.nodeType === 3;
+                    }).remove();
+
+                    // Style the length menu
+                    $('.dataTables_length select').addClass('form-select form-select-sm');
+
+                    // Add CSS to fix pagination position
+                    $('<style>')
+                        .text(`
+                        .dataTables_wrapper {
+                            display: flex;
+                            flex-direction: column;
+                            width: 100%;
+                        }
+                        .table-wrapper {
+                            overflow-x: auto;
+                            flex: 1;
+                        }
+                        .bottom {
+                            width: 100%;
+                            flex-shrink: 0;
+                        }
+                    `)
+                        .appendTo('head');
+                }
+            });
+        });
+    })(jQuery);
+
 
 
     $('#dealer-select').on('change', function() {

@@ -23,6 +23,8 @@ class DealersStock extends Model
         'other_sales',
         'declined_stock',
         'date_of_declined',
+        'updated_stock',
+        'previous_total_current_stock',
         'total_current_stock',
         'closing_stock_updated_at'
     ];

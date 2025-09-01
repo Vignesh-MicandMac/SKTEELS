@@ -107,6 +107,7 @@
                         <th>Obtained Points</th>
                         <th>Approved Status</th>
                         <th>Site Details</th>
+                        <th>Declined Reason</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -140,6 +141,7 @@
                                 View
                             </button>
                         </td>
+                        <td>{{ $sale_entry->declined_reason ?? 'N/A'}}</td>
 
 
 
@@ -279,55 +281,243 @@
         });
     })(jQuery);
 
+    // function updateStatus(id, status) {
+    //     if (status == 1) {
+    //         // Approve confirmation (no reason needed)
+    //         Swal.fire({
+    //             title: 'Are you sure?',
+    //             text: "You are about to approve this entry.",
+    //             icon: 'warning',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#28a745',
+    //             cancelButtonColor: '#6c757d',
+    //             confirmButtonText: 'Approve'
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 sendStatusUpdate(id, status, null);
+    //             }
+    //         });
+    //     } else if (status == 2) {
+    //         // UnApprove - Ask reason
+    //         Swal.fire({
+    //             title: 'Reason For UnApproval',
+    //             input: 'textarea',
+    //             inputPlaceholder: 'Enter reason...',
+    //             inputAttributes: {
+    //                 style: 'min-height:40px;font-size:13px;' // smaller textarea
+    //             },
+    //             width: 400, // shrink popup width
+    //             customClass: {
+    //                 confirmButton: 'swal2-sm-button',
+    //                 cancelButton: 'swal2-sm-button',
+    //                 popup: 'swal2-sm-popup',
+    //                 title: 'swal2-sm-title'
+    //             },
+    //             inputValidator: (value) => {
+    //                 if (!value) {
+    //                     return 'Reason required!';
+    //                 }
+    //             },
+    //             showCancelButton: true,
+    //             confirmButtonText: 'Submit',
+    //             confirmButtonColor: '#dc3545',
+    //             cancelButtonColor: '#6c757d',
+    //         }).then((result) => {
+    //             if (result.isConfirmed) {
+    //                 sendStatusUpdate(id, status, result.value);
+    //             }
+    //         });
+    //     }
+    // }
 
+    // function sendStatusUpdate(id, status, reason = null) {
+    //     $.ajax({
+    //         url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
+    //         type: 'POST',
+    //         data: {
+    //             _token: '{{ csrf_token() }}',
+    //             approved_status: status,
+    //             declined_reason: reason // <-- send reason if unapproved
+    //         },
+    //         success: function(response) {
+    //             Swal.fire({
+    //                 icon: 'success',
+    //                 title: 'Success!',
+    //                 text: response.success || 'Status updated successfully!',
+    //                 timer: 1500,
+    //                 showConfirmButton: false
+    //             });
+    //             setTimeout(() => location.reload(), 1600);
+    //         },
+    //         error: function(xhr) {
+    //             let errorMessage = "Something went wrong.";
+    //             if (xhr.responseJSON && xhr.responseJSON.error) {
+    //                 errorMessage = xhr.responseJSON.error;
+    //             }
+    //             Swal.fire({
+    //                 icon: 'error',
+    //                 title: 'Error!',
+    //                 text: errorMessage,
+    //             });
+    //         }
+    //     });
+    // }
 
     function updateStatus(id, status) {
-        console.log('status', status);
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to change the status.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: status == 1 ? '#28a745' : '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: status == 1 ? 'Approve' : 'UnApprove'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        approved_status: status
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.success || 'Status updated successfully!',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        setTimeout(() => location.reload(), 1600);
-                    },
-                    error: function(xhr) {
-                        let errorMessage = "Something went wrong.";
+        if (status == 1) {
+            // Approve confirmation (no reason needed)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to approve this entry.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Approve',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sendStatusUpdate(id, status, null);
+                }
 
-                        // Check if backend sent JSON with "error"
-                        if (xhr.responseJSON && xhr.responseJSON.error) {
-                            errorMessage = xhr.responseJSON.error;
-                        }
+                cleanupAfterSwal();
+            }).catch((error) => {
 
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: errorMessage,
-                        });
+                cleanupAfterSwal();
+            });
+        } else if (status == 2) {
+            // UnApprove - Ask reason
+            Swal.fire({
+                title: 'Reason For UnApproval',
+                input: 'textarea',
+                inputPlaceholder: 'Enter reason...',
+                inputAttributes: {
+                    style: 'min-height:40px;font-size:13px;'
+                },
+                width: 400,
+                customClass: {
+                    confirmButton: 'swal2-sm-button',
+                    cancelButton: 'swal2-sm-button',
+                    popup: 'swal2-sm-popup',
+                    title: 'swal2-sm-title'
+                },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Reason required!';
                     }
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sendStatusUpdate(id, status, result.value);
+                }
+
+                cleanupAfterSwal();
+            }).catch((error) => {
+
+                cleanupAfterSwal();
+            });
+        }
+    }
+
+
+    function cleanupAfterSwal() {
+
+        document.body.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+        document.documentElement.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+
+        $('.swal2-container').remove();
+        document.body.focus();
+    }
+
+    function sendStatusUpdate(id, status, reason = null) {
+        $.ajax({
+            url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                approved_status: status,
+                declined_reason: reason
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.success || 'Status updated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                setTimeout(() => location.reload(), 1600);
+            },
+            error: function(xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMessage,
                 });
             }
         });
     }
+
+
+
+    // function updateStatus(id, status) {
+    //     console.log('status', status);
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: "You are about to change the status.",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: status == 1 ? '#28a745' : '#dc3545',
+    //         cancelButtonColor: '#6c757d',
+    //         confirmButtonText: status == 1 ? 'Approve' : 'UnApprove'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             $.ajax({
+    //                 url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
+    //                 type: 'POST',
+    //                 data: {
+    //                     _token: '{{ csrf_token() }}',
+    //                     approved_status: status
+    //                 },
+    //                 success: function(response) {
+    //                     Swal.fire({
+    //                         icon: 'success',
+    //                         title: 'Success!',
+    //                         text: response.success || 'Status updated successfully!',
+    //                         timer: 1500,
+    //                         showConfirmButton: false
+    //                     });
+    //                     setTimeout(() => location.reload(), 1600);
+    //                 },
+    //                 error: function(xhr) {
+    //                     let errorMessage = "Something went wrong.";
+
+    //                     // Check if backend sent JSON with "error"
+    //                     if (xhr.responseJSON && xhr.responseJSON.error) {
+    //                         errorMessage = xhr.responseJSON.error;
+    //                     }
+
+    //                     Swal.fire({
+    //                         icon: 'error',
+    //                         title: 'Error!',
+    //                         text: errorMessage,
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
 
     //SITE DETAILS
     var siteModal = document.getElementById('siteModal');

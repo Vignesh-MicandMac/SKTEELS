@@ -20,7 +20,8 @@ class DealersStockManagementController extends Controller
     public function index()
     {
         $dealers = Dealers::whereNull('deleted_at')->get();
-        return view('activity.stocks.index', compact('dealers'));
+        $dealer_stocks = DealersStock::all();
+        return view('activity.stocks.index', compact('dealers', 'dealer_stocks'));
     }
 
     /**
@@ -110,7 +111,8 @@ class DealersStockManagementController extends Controller
     public function edit()
     {
         $dealers = Dealers::whereNull('deleted_at')->get();
-        return view('activity.stocks.edit', compact('dealers'));
+        $dealer_stocks = DealersStock::all();
+        return view('activity.stocks.edit', compact('dealers', 'dealer_stocks'));
     }
 
     /**
@@ -133,8 +135,12 @@ class DealersStockManagementController extends Controller
         }
 
         $latestStock = DealersStock::where('dealer_id', $request->dealer_id)->orderBy('id', 'desc')->first();
+        $previous_total_current_stock = $latestStock->total_current_stock;
+
         $latestStock->update([
             'total_current_stock' => $request->dispatch,
+            'updated_stock' => $request->dispatch,
+            'previous_total_current_stock' => $previous_total_current_stock,
         ]);
         return redirect()->route('activity.stocks.edit')->with('success', 'Stock updated for successfully!');
     }
@@ -147,7 +153,8 @@ class DealersStockManagementController extends Controller
     public function closing_stock_index()
     {
         $dealers = Dealers::whereNull('deleted_at')->get();
-        return view('activity.stocks.closing_stock_update', compact('dealers'));
+        $dealer_stocks = DealersStock::all();
+        return view('activity.stocks.closing_stock_update', compact('dealers', 'dealer_stocks'));
     }
 
     public function closing_stock_update(Request $request)
@@ -294,6 +301,7 @@ class DealersStockManagementController extends Controller
 
             $sale_entry = PromotorSaleEntry::findOrFail($id);
             $sale_entry->approved_status = $request->approved_status;
+            $sale_entry->declined_reason = $request->declined_reason ?? NULL;
             $sale_entry->save();
 
             $update_declined_stock = DealersStock::where('dealer_id', $sale_entry->dealer_id)->orderBy('id', 'desc')->first();
@@ -328,6 +336,7 @@ class DealersStockManagementController extends Controller
         $promotors = Promotor::findOrFail($id);
         $promotors->update([
             'approval_status' => $request->approved_status,
+            'declined_reason' => $request->declined_reason ?? NULL,
         ]);
         return response()->json(['success' => 'Updated successfully!']);
     }
@@ -379,11 +388,11 @@ class DealersStockManagementController extends Controller
             //     $promotor->update([
             //         'points' => $reduce_promotor_point
             //     ]);
-                $gift_product->update([
-                    'approved_status' => $request->approved_status
-                ]);
+            $gift_product->update([
+                'approved_status' => $request->approved_status,
+            ]);
 
-                return response()->json(['success' => 'Redeem Approved successfully!']);
+            return response()->json(['success' => 'Redeem Approved successfully!']);
             // } else {
             //     return response()->json(['error' => 'Rededem Points exceeded the Promotor points by ' . $reduce_promotor_point . '!'], 422);
             // }
@@ -400,7 +409,8 @@ class DealersStockManagementController extends Controller
             ]);
 
             $gift_product->update([
-                'approved_status' => $request->approved_status
+                'approved_status' => $request->approved_status,
+                'declined_reason' => $request->declined_reason ?? NULL,
             ]);
 
             return response()->json(['success' => 'Redeem UnApproved successfully!']);

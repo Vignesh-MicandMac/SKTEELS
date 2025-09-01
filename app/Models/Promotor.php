@@ -30,6 +30,7 @@ class Promotor extends Model
         'referral_mobile_no',
         'approval_status',
         'points',
+        'declined_reason',
         'otp',
         'redeem_otp',
         'otp_generated_at',
