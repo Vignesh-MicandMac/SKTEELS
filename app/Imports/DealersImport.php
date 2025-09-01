@@ -59,7 +59,7 @@ class DealersImport implements ToModel, WithHeadingRow, WithValidation
             'district' => $districtId,
             'area' => $row['area'],
             'pincode' => $pincodeId,
-            'gst_no' => $row['gst_no'] ?? null,
+            'gst_no' => $row['gstno'] ?? null,
             'role' => '0',
             'action' => '1',
             'created_at' => now(),
