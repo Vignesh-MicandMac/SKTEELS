@@ -25,6 +25,7 @@
                         <th>Area Name</th>
                         <th>Date Of Birth</th>
                         <th>Approval Status</th>
+                        <th>Declined Reason</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -57,6 +58,7 @@
                             <span class="badge bg-warning">Pending</span>
                             @endif
                         </td>
+                        <td>{{ $promotor->declined_reason ?? 'N/A'}}</td>
                         <td>
                             <div class="d-flex gap-2">
 
