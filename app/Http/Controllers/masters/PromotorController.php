@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\masters;
 
 use App\Http\Controllers\Controller;
+use App\Imports\PromotorsImport;
 use App\Models\Dealers;
 use App\Models\District;
 use App\Models\Promotor;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PromotorController extends Controller
 {
@@ -47,14 +49,18 @@ class PromotorController extends Controller
             'mobile'            => 'required|digits:10',
             'whatsapp_no'       => 'required|digits:10',
             'aadhar_no'         => 'required|digits:12',
+            'pan_card_no' => 'required|string|size:10|regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/',
             'address'           => 'required|string|max:255',
             'state_id'          => 'required|string',
             'district_id'       => 'required|string',
             'area_name'         => 'required|string|max:255',
-            'pincode'           => 'required|digits:6',
+            'pincode'           => 'required',
             'dob'               => 'required|date',
             'promotor_type_id'  => 'required|exists:promotor_types,id',
-            'img_path'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'aadhar_front_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'aadhar_back_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'pan_front_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'pan_back_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'dealer_id' => 'required|array',
             'dealer_id.*' => 'exists:dealers,id',
         ], [
@@ -68,31 +74,96 @@ class PromotorController extends Controller
             return redirect()->back()->with('warning', $validator->errors()->first())->withErrors($validator)->withInput();
         }
 
-        $imagePath = null;
-        if ($request->hasFile('img_path')) {
-            // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
-            $file = $request->file('img_path');
+        // $imagePath = null;
+        // if ($request->hasFile('img_path')) {
+        //     // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+        //     $file = $request->file('img_path');
+        //     $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        //     $path = public_path('storage\uploads\promotors');
+
+        //     if (!file_exists($path)) {
+        //         mkdir($path, 0775, true);
+        //     }
+
+        //     $file->move($path, $filename);
+
+        //     $imagePath = 'uploads/promotors/' . $filename;
+        // }
+
+
+        // Aadhaar Front
+        $aadharFrontPath = null;
+        if ($request->hasFile('aadhar_front_img')) {
+            $file = $request->file('aadhar_front_img');
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $path = public_path('storage\uploads\promotors');
+            $path = public_path('storage/uploads/promotors/aadhar');
 
             if (!file_exists($path)) {
                 mkdir($path, 0775, true);
             }
 
             $file->move($path, $filename);
+            $aadharFrontPath = 'uploads/promotors/aadhar/' . $filename;
+        }
 
-            $imagePath = 'uploads/promotors/' . $filename;
+        // Aadhaar Back
+        $aadharBackPath = null;
+        if ($request->hasFile('aadhar_back_img')) {
+            $file = $request->file('aadhar_back_img');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage/uploads/promotors/aadhar');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+            $aadharBackPath = 'uploads/promotors/aadhar/' . $filename;
+        }
+
+        // PAN Front
+        $panFrontPath = null;
+        if ($request->hasFile('pan_front_img')) {
+            $file = $request->file('pan_front_img');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage/uploads/promotors/pancard');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+            $panFrontPath = 'uploads/promotors/pancard/' . $filename;
+        }
+
+        // PAN Back
+        $panBackPath = null;
+        if ($request->hasFile('pan_back_img')) {
+            $file = $request->file('pan_back_img');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = public_path('storage/uploads/promotors/pancard');
+
+            if (!file_exists($path)) {
+                mkdir($path, 0775, true);
+            }
+
+            $file->move($path, $filename);
+            $panBackPath = 'uploads/promotors/pancard/' . $filename;
         }
 
         $promotor = Promotor::create([
             'dealer_id'         => $request->dealer_id,
             'executive_id'      => $request->executive_id,
             'name'              => $request->name,
-            'img_path'          => $imagePath,
             'promotor_type_id'  => $request->promotor_type_id,
             'mobile'            => $request->mobile,
             'whatsapp_no'       => $request->whatsapp_no,
             'aadhaar_no'        => $request->aadhar_no,
+            'aadhar_front_img'        => $aadharFrontPath,
+            'aadhar_back_img'        => $aadharBackPath,
+            'pan_front_img'        => $panFrontPath,
+            'pan_back_img'        => $panBackPath,
+            'pan_card_no'        => $request->pan_card_no,
             'address'           => $request->address,
             'state_id'          => $request->state_id,
             'district_id'       => $request->district_id,
@@ -151,14 +222,18 @@ class PromotorController extends Controller
             'mobile'            => 'required|digits:10',
             'whatsapp_no'       => 'required|digits:10',
             'aadhar_no'         => 'required|digits:12',
+            'pan_card_no' => 'required|string|size:10|regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/',
             'address'           => 'required|string|max:255',
             'state_id'          => 'required|string',
             'district_id'       => 'required|string',
             'area_name'         => 'required|string|max:255',
-            'pincode'           => 'required|digits:6',
+            'pincode'           => 'required',
             'dob'               => 'required|date',
             'promotor_type_id'  => 'required|exists:promotor_types,id',
-            'img_path'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'aadhar_front_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'aadhar_back_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'pan_front_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'pan_back_img'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'dealer_id' => 'required|array',
             'dealer_id.*' => 'exists:dealers,id',
         ], [
@@ -178,23 +253,29 @@ class PromotorController extends Controller
 
         $imagePath = $promotor->img_path;
 
-        if ($request->hasFile('img_path')) {
-            if ($promotor->img_path && Storage::disk('public')->exists($promotor->img_path)) {
-                Storage::disk('public')->delete($promotor->img_path);
-            }
-            // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
-            $file = $request->file('img_path');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $path = public_path('storage\uploads\promotors');
+        // if ($request->hasFile('img_path')) {
+        //     if ($promotor->img_path && Storage::disk('public')->exists($promotor->img_path)) {
+        //         Storage::disk('public')->delete($promotor->img_path);
+        //     }
+        //     // $imagePath = $request->file('img_path')->store('uploads/promotors', 'public');
+        //     $file = $request->file('img_path');
+        //     $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        //     $path = public_path('storage\uploads\promotors');
 
-            if (!file_exists($path)) {
-                mkdir($path, 0775, true);
-            }
+        //     if (!file_exists($path)) {
+        //         mkdir($path, 0775, true);
+        //     }
 
-            $file->move($path, $filename);
+        //     $file->move($path, $filename);
 
-            $imagePath = 'uploads/promotors/' . $filename;
-        }
+        //     $imagePath = 'uploads/promotors/' . $filename;
+        // }
+
+        $aadharFrontPath = uploadFile($request->file('aadhar_front_img'), 'uploads/promotors/aadhar', $promotor->aadhar_front_img);
+        $aadharBackPath  = uploadFile($request->file('aadhar_back_img'), 'uploads/promotors/aadhar', $promotor->aadhar_back_img);
+        $panFrontPath    = uploadFile($request->file('pan_front_img'), 'uploads/promotors/pancard', $promotor->pan_front_img);
+        $panBackPath     = uploadFile($request->file('pan_back_img'), 'uploads/promotors/pancard', $promotor->pan_back_img);
+
 
         $promotor->update([
             'executive_id'      => $request->executive_id,
@@ -204,6 +285,11 @@ class PromotorController extends Controller
             'mobile'            => $request->mobile,
             'whatsapp_no'       => $request->whatsapp_no,
             'aadhaar_no'        => $request->aadhar_no,
+            'aadhar_front_img'        => $aadharFrontPath,
+            'aadhar_back_img'        => $aadharBackPath,
+            'pan_front_img'        => $panFrontPath,
+            'pan_back_img'        => $panBackPath,
+            'pan_card_no'        => $request->pan_card_no,
             'address'           => $request->address,
             'state_id'          => $request->state_id,
             'district_id'       => $request->district_id,
@@ -266,5 +352,19 @@ class PromotorController extends Controller
         }
 
         return redirect()->route('masters.promotors.index')->with('success', 'Dealers assigned successfully!');
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            Excel::import(new PromotorsImport, $request->file('file'));
+            return redirect()->route('masters.promotors.index')->with('success', 'Promotors uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

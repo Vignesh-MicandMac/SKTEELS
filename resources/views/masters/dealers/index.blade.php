@@ -69,6 +69,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
+                        <th>Unique Id</th>
                         <th>Name</th>
                         <th>Mobile</th>
                         <th>State</th>
@@ -88,6 +89,7 @@
                     @foreach($dealers as $dealer)
                     <tr>
                         <td>{{ $dealer->id }}</td>
+                        <td>{{ $dealer->tally_dealer_id ?? 'N/A' }}</td>
                         <td>{{ $dealer->name ?? 'N/A'}}</td>
                         <td>{{ $dealer->mobile ?? 'N/A'}}</td>
                         <td>{{ $dealer->states->state_name ?? 'N/A' }}</td>

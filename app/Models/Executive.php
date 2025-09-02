@@ -14,6 +14,7 @@ class Executive extends Model
     protected $table = 'executives';
 
     protected $fillable = [
+        'unique_executive_id',
         'name',
         'role',
         'mobile',

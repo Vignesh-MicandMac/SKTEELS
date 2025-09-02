@@ -2,7 +2,6 @@
 
 namespace App\Imports;
 
-use App\Models\Dealers;
 use App\Models\District;
 use App\Models\Executive;
 use App\Models\Pincode;
@@ -13,7 +12,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class DealersImport implements ToModel, WithHeadingRow, WithValidation
+class ExecutivesImport implements ToModel, WithHeadingRow, WithValidation
 {
     /**
      * @param array $row
@@ -29,9 +28,9 @@ class DealersImport implements ToModel, WithHeadingRow, WithValidation
 
         $name = $row['name'] ?? null;
         $mobile = $row['mobile'] ?? null;
+        $districtName = $row['password'] ?? null;
         $stateName = $row['state'] ?? null;
         $districtName = $row['district'] ?? null;
-        $pincodeValue = $row['pincode'] ?? null;
 
         if (!$name || !$mobile || !$stateName || !$districtName) {
             throw ValidationException::withMessages([
@@ -41,31 +40,25 @@ class DealersImport implements ToModel, WithHeadingRow, WithValidation
 
         $stateId = States::whereRaw('LOWER(state_name) = ?', [strtolower(trim($row['state']))])->value('id');
         $districtId = District::whereRaw('LOWER(district_name) = ?', [strtolower(trim($row['district']))])->value('id');
-        $pincodeId = Pincode::where('pincode', trim($row['pincode']))->value('id');
 
+        $lastExecutive = Executive::orderBy('unique_executive_id', 'desc')->first();
 
-        $lastDealer = Dealers::orderBy('tally_dealer_id', 'desc')->first();
-        if ($lastDealer && $lastDealer->tally_dealer_id != null) {
+        if ($lastExecutive && $lastExecutive->unique_executive_id != null) {
 
-            $lastNumber = (int) str_replace('DL', '', $lastDealer->tally_dealer_id);
+            $lastNumber = (int) str_replace('EX', '', $lastExecutive->unique_executive_id);
             $nextNumber = $lastNumber + 1;
         } else {
             $nextNumber = 1000;
         }
 
-        return new Dealers([
-            'tally_dealer_id' => 'DL' . $nextNumber,
+        return new Executive([
+            'unique_executive_id' =>  'EX' . $nextNumber,
             'name' => $row['name'],
             'mobile' => $row['mobile'],
             'address' => $row['address'] ?? null,
-            'password' => Hash::make($row['password'] ?? '123456'),
-            'state' => $stateId,
-            'district' => $districtId,
-            'area' => $row['area'],
-            'pincode' => $pincodeId,
-            'gst_no' => $row['gstno'] ?? null,
-            'role' => '0',
-            'action' => '1',
+            'app_password' => Hash::make($row['password'] ?? '123456'),
+            'state_id' => $stateId,
+            'district_id' => $districtId,
             'created_at' => now(),
         ]);
     }
@@ -82,8 +75,6 @@ class DealersImport implements ToModel, WithHeadingRow, WithValidation
             ],
             'state'    => 'required|string',
             'district' => 'required|string',
-            'area'     => 'nullable|string',
-            'pincode'  => 'nullable|digits:6',
         ];
     }
 }

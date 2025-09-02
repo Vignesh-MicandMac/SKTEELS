@@ -76,6 +76,30 @@ if (!function_exists('hasPermission')) {
     }
 }
 
+if (!function_exists('uploadFile')) {
+    function uploadFile($file, $folder, $oldFile = null)
+    {
+        if (!$file) {
+            return $oldFile;
+        }
+
+        // Delete old
+        if ($oldFile && Storage::disk('public')->exists($oldFile)) {
+            Storage::disk('public')->delete($oldFile);
+        }
+
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = public_path("storage/{$folder}");
+
+        if (!file_exists($path)) {
+            mkdir($path, 0775, true);
+        }
+
+        $file->move($path, $filename);
+
+        return "{$folder}/{$filename}";
+    }
+}
 
 // if (!function_exists('loadUserPermissions')) {
 //     function loadUserPermissions($userId = null)

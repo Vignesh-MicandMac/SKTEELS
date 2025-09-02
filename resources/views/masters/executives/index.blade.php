@@ -12,6 +12,53 @@
     @endif
 </div>
 
+<div class="row">
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Bulk Upload </h5>
+            </div>
+            <div class="card-body">
+                @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+                <div class="d-flex justify-content-between mb-3">
+                    <a href="{{ asset('storage/uploads/samples/executives_sample.xlsx') }}"
+                        class="btn btn-primary btn-sm"
+                        download>
+                        Download Sample Excel
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('masters.executives.bulkUpload' )}}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">Upload Excel File (.xlsx)</label>
+                        <input type="file" name="file" class="form-control" required accept=".xlsx,.xls">
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('masters.executives.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Dealers Table -->
 <div class="card">
     <div class="card-body">
@@ -20,6 +67,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
+                        <th>Unique Id</th>
                         <th>Name</th>
                         <th>Mobile</th>
                         <!-- <th>Address</th> -->
@@ -36,6 +84,7 @@
                     @foreach($executives as $executive)
                     <tr>
                         <td>{{ $executive->id }}</td>
+                        <td>{{ $executive->unique_executive_id ?? 'N/A'}}</td>
                         <td>{{ $executive->name ?? 'N/A'}}</td>
                         <td>{{ $executive->mobile ?? 'N/A'}}</td>
                         <!-- <td>{{ $executive->address ?? 'N/A'}}</td> -->

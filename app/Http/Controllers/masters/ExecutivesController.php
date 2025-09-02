@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\masters;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ExecutivesImport;
 use App\Models\Dealers;
 use App\Models\District;
 use App\Models\Executive;
@@ -10,6 +11,7 @@ use App\Models\States;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExecutivesController extends Controller
 {
@@ -54,7 +56,19 @@ class ExecutivesController extends Controller
             return redirect()->back()->with('Warning', 'Please fill the required fields')->withErrors($validator)->withInput();
         }
 
+        $lastExecutive = Executive::orderBy('unique_executive_id', 'desc')->first();
+
+        if ($lastExecutive && $lastExecutive->unique_executive_id != null) {
+
+            $lastNumber = (int) str_replace('EX', '', $lastExecutive->unique_executive_id);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1000;
+        }
+
+
         $executive = new Executive();
+        $executive->unique_executive_id = 'EX' . $nextNumber;
         $executive->name = $request->name;
         $executive->mobile = $request->mobile;
         $executive->address = $request->address;
@@ -123,5 +137,19 @@ class ExecutivesController extends Controller
         $executive = Executive::findOrFail($id);
         $executive->delete();
         return redirect()->route('masters.executives.index')->with('success', 'Executive deleted successfully.');
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            Excel::import(new ExecutivesImport, $request->file('file'));
+            return redirect()->route('masters.executives.index')->with('success', 'Executive uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

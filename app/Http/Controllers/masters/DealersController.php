@@ -47,10 +47,16 @@ class DealersController extends Controller
 
         $lastDealer = Dealers::orderBy('tally_dealer_id', 'desc')->first();
 
-        $nextNumber = ($lastDealer->tally_dealer_id != NULL) ? ($lastDealer->tally_dealer_id + 1) : 1000;
+        if ($lastDealer && $lastDealer->tally_dealer_id != null) {
+
+            $lastNumber = (int) str_replace('DL', '', $lastDealer->tally_dealer_id);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1000;
+        }
 
         Dealers::create([
-            'tally_dealer_id' => $nextNumber,
+            'tally_dealer_id' => 'DL' . $nextNumber,
             'name' => $request->name,
             'mobile' => $request->mobile,
             'address' => $request->address,
@@ -129,16 +135,16 @@ class DealersController extends Controller
     }
 
     public function bulkUpload(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv|max:2048'
-    ]);
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
 
-    try {
-        Excel::import(new DealersImport, $request->file('file'));
-        return redirect()->route('masters.dealers.index')->with('success', 'Dealers uploaded successfully.');
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        try {
+            Excel::import(new DealersImport, $request->file('file'));
+            return redirect()->route('masters.dealers.index')->with('success', 'Dealers uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
-}
 }

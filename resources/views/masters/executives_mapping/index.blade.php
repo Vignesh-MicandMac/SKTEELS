@@ -5,6 +5,53 @@
 @section('content')
 <h5 class="py-3 mb-4"><span class="text-muted fw-light">Masters/</span> Executive Mapping</h5>
 
+
+<div class="row">
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Bulk Upload </h5>
+            </div>
+            <div class="card-body">
+                @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+                <div class="d-flex justify-content-between mb-3">
+                    <a href="{{ asset('storage/uploads/samples/promotors_sample.xlsx') }}"
+                        class="btn btn-primary btn-sm"
+                        download>
+                        Download Sample Excel
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('masters.executive.mapping.bulkUpload' )}}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">Upload Excel File (.xlsx)</label>
+                        <input type="file" name="file" class="form-control" required accept=".xlsx,.xls">
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('masters.executive.mapping.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Basic Layout & Basic with Icons -->
 <div class="row">
     <!-- Basic Layout -->

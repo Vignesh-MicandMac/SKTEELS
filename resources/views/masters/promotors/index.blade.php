@@ -19,6 +19,54 @@
 </div>
 
 
+<div class="row">
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Bulk Upload </h5>
+            </div>
+            <div class="card-body">
+                @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+                <div class="d-flex justify-content-between mb-3">
+                    <a href="{{ asset('storage/uploads/samples/promotors_sample.xlsx') }}"
+                        class="btn btn-primary btn-sm"
+                        download>
+                        Download Sample Excel
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ route('masters.promotors.bulkUpload' )}}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">Upload Excel File (.xlsx)</label>
+                        <input type="file" name="file" class="form-control" required accept=".xlsx,.xls">
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ route('masters.promotors.index') }}" class="btn btn-secondary btn-sm">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @if(hasPermission(['add_promotors']))
 <!-- Basic Layout -->
 <div class="row">
@@ -95,9 +143,76 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label class="form-label">Aadhar Front Image</label>
+                                <input type="file" name="aadhar_front_img" class="form-control" onchange="aadharFrontPreviewImage(event)" accept="image/*">
+                                <small class="text-muted d-block fw-bold"><span class="text-danger">*</span>Image size must not exceed 2MB.</small>
+                                @error('aadhar_front_img') <small class="text-danger">{{ $message }}</small> @enderror
+                                <!-- Image preview shown just below in a smaller container -->
+                                <div class="mt-2">
+                                    <div class="card" id="aadharFrontimageCard">
+                                        <img id="aadharFrontPreview" src="#" alt="Product Image" class="card-img-top">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Aadhar Back Image</label>
+                                <input type="file" name="aadhar_back_img" class="form-control" onchange="aadharBackPreviewImage(event)" accept="image/*">
+                                <small class="text-muted d-block fw-bold"><span class="text-danger">*</span>Image size must not exceed 2MB.</small>
+                                @error('aadhar_back_img') <small class="text-danger">{{ $message }}</small> @enderror
+                                <!-- Image preview shown just below in a smaller container -->
+                                <div class="mt-2">
+                                    <div class="card" id="aadharBackimageCard">
+                                        <img id="aadharBackPreview" src="#" alt="Product Image" class="card-img-top">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Pan Card Number</label>
+                                <input type="text" name="pan_card_no" class="form-control" placeholder="Pan Card Number" value="{{ old('pan_card_no') }}">
+                                @error('pan_card_no') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pan Card Front Image</label>
+                                <input type="file" name="pan_front_img" class="form-control" onchange="panFrontPreviewImage(event)" accept="image/*">
+                                <small class="text-muted d-block fw-bold"><span class="text-danger">*</span>Image size must not exceed 2MB.</small>
+                                @error('pan_front_img') <small class="text-danger">{{ $message }}</small> @enderror
+                                <!-- Image preview shown just below in a smaller container -->
+                                <div class="mt-2">
+                                    <div class="card" id="panFrontimageCard">
+                                        <img id="panFrontPreview" src="#" alt="Product Image" class="card-img-top">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Pan Card Back Image</label>
+                                <input type="file" name="pan_back_img" class="form-control" onchange="panBackPreviewImage(event)" accept="image/*">
+                                <small class="text-muted d-block fw-bold"><span class="text-danger">*</span>Image size must not exceed 2MB.</small>
+                                @error('pan_back_img') <small class="text-danger">{{ $message }}</small> @enderror
+                                <!-- Image preview shown just below in a smaller container -->
+                                <div class="mt-2">
+                                    <div class="card" id="panBackimageCard">
+                                        <img id="panBackPreview" src="#" alt="Product Image" class="card-img-top">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Address</label>
                                 <input type="text" name="address" class="form-control" placeholder="Enter Address" value="{{ old('door_no') }}">
                             </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
                             <div class="col-md-6">
                                 <label class="form-label">State</label>
                                 <select name="state_id" id="state-select" class="form-control">
@@ -108,9 +223,6 @@
                                 </select>
                                 @error('state') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">District</label>
                                 <select name="district_id" id="district-select" class="form-control">
@@ -119,14 +231,15 @@
 
                                 @error('district') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
+
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Area Name</label>
                                 <input type="text" name="area_name" class="form-control" placeholder="Enter your Area" value="{{ old('area_name') }}">
                                 @error('area_name') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Pin Code</label>
                                 <!-- <input type="text" name="pincode" class="form-control" placeholder="Enter 6-digit PIN" value="{{ old('pincode') }}"> -->
@@ -136,26 +249,15 @@
 
                                 @error('pincode') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Date of Birth</label>
-                                <input type="date" name="dob" class="form-control" value="{{ old('dob') }}">
-                                @error('dob') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
-                            </div>
+
 
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Profile Image</label>
-                                <input type="file" name="img_path" class="form-control" onchange="previewImage(event)" accept="image/*">
-                                <small class="text-muted d-block fw-bold"><span class="text-danger">*</span>Image size must not exceed 2MB.</small>
-                                @error('img_path') <small class="text-danger">{{ $message }}</small> @enderror
-                                <!-- Image preview shown just below in a smaller container -->
-                                <div class="mt-2">
-                                    <div class="card" id="imageCard">
-                                        <img id="imagePreview" src="#" alt="Product Image" class="card-img-top">
-                                    </div>
-                                </div>
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" name="dob" class="form-control" value="{{ old('dob') }}">
+                                @error('dob') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
@@ -230,9 +332,14 @@
                         <th>Dealer Name</th>
                         <th>Promotor Name</th>
                         <th>Promotor Type</th>
-                        <th>Profile Image</th>
                         <th>Mobile No</th>
                         <th>WhatsApp no</th>
+                        <th>Aadhar no</th>
+                        <th>Aadhar Front Image</th>
+                        <th>Aadhar Back Image</th>
+                        <th>PanCard no</th>
+                        <th>PanCard Front Image</th>
+                        <th>PanCard Back Image</th>
                         <th>Address</th>
                         <th>State</th>
                         <th>District</th>
@@ -260,15 +367,38 @@
                         </td>
                         <td>{{ $promotor->name ?? 'N/A'}}</td>
                         <td>{{ $promotor->promotor_type->promotor_type ?? 'N/A'}}</td>
+                        <td>{{ $promotor->mobile ?? 'N/A'}}</td>
+                        <td>{{ $promotor->whatsapp_no ?? 'N/A'}}</td>
+                        <td>{{ $promotor->aadhaar_no ?? 'N/A'}}</td>
                         <td>
-                            @if($promotor->img_path)
-                            <img src="{{ asset('storage/' . $promotor->img_path) }}" alt="Promotor Image" class="product-img">
+                            @if($promotor->aadhar_front_img)
+                            <img src="{{ asset('storage/' . $promotor->aadhar_front_img) }}" alt="Promotor Image" class="product-img">
                             @else
                             <span class="text-muted">N/A</span>
                             @endif
                         </td>
-                        <td>{{ $promotor->mobile ?? 'N/A'}}</td>
-                        <td>{{ $promotor->whatsapp_no ?? 'N/A'}}</td>
+                        <td>
+                            @if($promotor->aadhar_back_img)
+                            <img src="{{ asset('storage/' . $promotor->aadhar_back_img) }}" alt="Promotor Image" class="product-img">
+                            @else
+                            <span class="text-muted">N/A</span>
+                            @endif
+                        </td>
+                        <td>{{ $promotor->pan_card_no ?? 'N/A'}}</td>
+                        <td>
+                            @if($promotor->pan_front_img)
+                            <img src="{{ asset('storage/' . $promotor->pan_front_img) }}" alt="Promotor Image" class="product-img">
+                            @else
+                            <span class="text-muted">N/A</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($promotor->pan_back_img)
+                            <img src="{{ asset('storage/' . $promotor->pan_back_img) }}" alt="Promotor Image" class="product-img">
+                            @else
+                            <span class="text-muted">N/A</span>
+                            @endif
+                        </td>
                         <td>{{ $promotor->address ?? 'N/A'}}</td>
                         <td>{{ $promotor->state->state_name ?? 'N/A'}}</td>
                         <td>{{ $promotor->district->district_name ?? 'N/A'}}</td>
@@ -503,10 +633,66 @@
     });
 
 
+    // // Image Preview
+    // function previewImage(event) {
+    //     const imageCard = document.getElementById('imageCard');
+    //     const imagePreview = document.getElementById('imagePreview');
+    //     const file = event.target.files[0];
+
+    //     if (file) {
+    //         imagePreview.src = URL.createObjectURL(file);
+    //         imageCard.style.display = 'block';
+    //     } else {
+    //         imagePreview.src = '';
+    //         imageCard.style.display = 'none';
+    //     }
+    // }
     // Image Preview
-    function previewImage(event) {
-        const imageCard = document.getElementById('imageCard');
-        const imagePreview = document.getElementById('imagePreview');
+    function aadharFrontPreviewImage(event) {
+        const imageCard = document.getElementById('aadharFrontimageCard');
+        const imagePreview = document.getElementById('aadharFrontPreview');
+        const file = event.target.files[0];
+
+        if (file) {
+            imagePreview.src = URL.createObjectURL(file);
+            imageCard.style.display = 'block';
+        } else {
+            imagePreview.src = '';
+            imageCard.style.display = 'none';
+        }
+    }
+
+    function aadharBackPreviewImage(event) {
+        const imageCard = document.getElementById('aadharBackimageCard');
+        const imagePreview = document.getElementById('aadharBackPreview');
+        const file = event.target.files[0];
+
+        if (file) {
+            imagePreview.src = URL.createObjectURL(file);
+            imageCard.style.display = 'block';
+        } else {
+            imagePreview.src = '';
+            imageCard.style.display = 'none';
+        }
+    }
+
+    function panFrontPreviewImage(event) {
+        const imageCard = document.getElementById('panFrontimageCard');
+        const imagePreview = document.getElementById('panFrontPreview');
+        const file = event.target.files[0];
+
+        if (file) {
+            imagePreview.src = URL.createObjectURL(file);
+            imageCard.style.display = 'block';
+        } else {
+            imagePreview.src = '';
+            imageCard.style.display = 'none';
+        }
+    }
+
+    function panBackPreviewImage(event) {
+        const imageCard = document.getElementById('panBackimageCard');
+        const imagePreview = document.getElementById('panBackPreview');
         const file = event.target.files[0];
 
         if (file) {

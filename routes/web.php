@@ -151,6 +151,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/update/{id}', [ExecutivesController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [ExecutivesController::class, 'destroy'])->name('destroy');
         Route::get('/get-districts/{state_id}', [ExecutivesController::class, 'getDistricts']);
+        Route::post('bulk-upload', [ExecutivesController::class, 'bulkUpload'])->name('bulkUpload');
     });
 
     //Executive Mapping 
@@ -161,6 +162,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/update/{id}', [ExecutiveDealerMappingController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [ExecutiveDealerMappingController::class, 'destroy'])->name('destroy');
         Route::delete('/delete/{id}', [ExecutiveDealerMappingController::class, 'delete'])->name('delete');
+        Route::post('bulk-upload', [ExecutiveDealerMappingController::class, 'bulkUpload'])->name('bulkUpload');
     });
 
     //Products 
@@ -192,6 +194,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [PromotorController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [PromotorController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [PromotorController::class, 'destroy'])->name('destroy');
+        Route::post('bulk-upload', [PromotorController::class, 'bulkUpload'])->name('bulkUpload');
     });
 
     //Brands

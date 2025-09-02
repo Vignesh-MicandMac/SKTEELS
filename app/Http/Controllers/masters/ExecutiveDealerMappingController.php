@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\masters;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ExecutiveDealerMappingImport;
 use App\Models\Dealers;
 use App\Models\Executive;
 use App\Models\ExecutiveDealerMapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExecutiveDealerMappingController extends Controller
 {
@@ -96,5 +98,19 @@ class ExecutiveDealerMappingController extends Controller
         $mapping->delete();
 
         return back()->with('success', 'Mapping deleted successfully.');
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            Excel::import(new ExecutiveDealerMappingImport, $request->file('file'));
+            return redirect()->route('masters.dealers.index')->with('success', 'Dealers uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }
