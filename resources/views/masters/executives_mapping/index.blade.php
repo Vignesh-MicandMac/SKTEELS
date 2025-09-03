@@ -27,7 +27,7 @@
                 </div>
                 @endif
                 <div class="d-flex justify-content-between mb-3">
-                    <a href="{{ asset('storage/uploads/samples/promotors_sample.xlsx') }}"
+                    <a href="{{ asset('storage/uploads/samples/executive_dealers_mapping_sample.xlsx') }}"
                         class="btn btn-primary btn-sm"
                         download>
                         Download Sample Excel

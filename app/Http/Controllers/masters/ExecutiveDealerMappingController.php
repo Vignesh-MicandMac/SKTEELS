@@ -108,7 +108,7 @@ class ExecutiveDealerMappingController extends Controller
 
         try {
             Excel::import(new ExecutiveDealerMappingImport, $request->file('file'));
-            return redirect()->route('masters.dealers.index')->with('success', 'Dealers uploaded successfully.');
+            return redirect()->route('masters.executive.mapping.index')->with('success', 'Uploaded Dealers mapped with Executive successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
