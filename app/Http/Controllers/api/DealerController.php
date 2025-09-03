@@ -285,7 +285,7 @@ class DealerController extends Controller
                 'area_name'         => $request->area_name,
                 'pincode'           => $request->pincode,
                 'dob'               => $request->dob,
-                'approval_status'   => '1',
+                'approval_status'   => '0',
                 'is_active'         => 1,
             ]);
 
