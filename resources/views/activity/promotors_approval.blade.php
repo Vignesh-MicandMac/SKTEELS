@@ -24,7 +24,7 @@
                         <th>District</th>
                         <th>Area Name</th>
                         <th>Date Of Birth</th>
-                        <th>Approval Status</th>
+                        <!-- <th>Approval Status</th> -->
                         <th>Declined Reason</th>
                         <th>Actions</th>
                     </tr>
@@ -49,35 +49,37 @@
                         <td>{{ $promotor->district->district_name ?? 'N/A'}}</td>
                         <td>{{ $promotor->area_name ?? 'N/A'}}</td>
                         <td>{{ $promotor->dob ?? 'N/A'}}</td>
-                        <td>
-                            @if($promotor->approval_status == 1)
+                        <!-- <td> -->
+                        {{-- @if($promotor->approval_status == 1)
                             <span class="badge bg-success">Approved</span>
                             @elseif($promotor->approval_status == 2)
                             <span class="badge bg-danger">UnApproved</span>
                             @else
                             <span class="badge bg-warning">Pending</span>
-                            @endif
-                        </td>
+                            @endif --}}
+                        <!-- </td> -->
                         <td>{{ $promotor->declined_reason ?? 'N/A'}}</td>
                         <td>
                             <div class="d-flex gap-2">
 
-                                @if($promotor->approval_status == 0 || $promotor->approval_status == 2)
+                                @if($promotor->approval_status == 0 )
                                 <button
                                     type="button"
-                                    class="btn btn-success btn-sm py-0 px-2"
+                                    class="btn btn-primary btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $promotor->id }}, 1)">
                                     Approve
                                 </button>
-                                @endif
 
-                                @if($promotor->approval_status == 0 || $promotor->approval_status == 1)
                                 <button
                                     type="button"
-                                    class="btn btn-danger btn-sm py-0 px-2"
+                                    class="btn btn-dark btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $promotor->id }}, 2)">
                                     UnApprove
                                 </button>
+                                @elseif($promotor->approval_status == 1)
+                                <span class="badge bg-success">Approved</span>
+                                @elseif($promotor->approval_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
                                 @endif
                             </div>
                         </td>

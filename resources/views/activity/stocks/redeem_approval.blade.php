@@ -100,7 +100,7 @@
                         <th>Product Redeem Points</th>
                         <th>Balance Promotor Points</th>
                         <th>Declined Reason</th>
-                        <th>Approved Status</th>
+                        <!-- <th>Approved Status</th> -->
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -119,35 +119,37 @@
                         <td>{{ $redeem_product->product_redeem_points ?? 'N/A'}}</td>
                         <td>{{ $redeem_product->balance_promotor_points ?? 'N/A'}}</td>
                         <td>{{ $redeem_product->declined_reason ?? 'N/A'}}</td>
-                        <td>
-                            @if($redeem_product->approved_status == 1)
+                        <!-- <td> -->
+                        {{-- @if($redeem_product->approved_status == 1)
                             <span class="badge bg-success">Approved</span>
                             @elseif($redeem_product->approved_status == 2)
                             <span class="badge bg-danger">UnApproved</span>
                             @else
                             <span class="badge bg-warning">Pending</span>
-                            @endif
-                        </td>
+                            @endif --}}
+                        <!-- </td> -->
                         <td>
                             <div class="d-flex gap-2">
 
-                                {{-- @if($redeem_product->approved_status == 0 || $redeem_product->approved_status == 2) --}}
+                                @if($redeem_product->approved_status == 0 )
                                 <button
                                     type="button"
-                                    class="btn btn-success btn-sm py-0 px-2"
+                                    class="btn btn-primary btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $redeem_product->id }}, 1)">
                                     Approve
                                 </button>
-                                {{-- @endif --}}
 
-                                {{-- @if($redeem_product->approved_status == 0 || $redeem_product->approved_status == 1) --}}
                                 <button
                                     type="button"
-                                    class="btn btn-danger btn-sm py-0 px-2"
+                                    class="btn btn-dark btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $redeem_product->id }}, 2)">
                                     UnApprove
                                 </button>
-                                {{-- @endif --}}
+                                @elseif($redeem_product->approved_status == 1)
+                                <span class="badge bg-success">Approved</span>
+                                @elseif($redeem_product->approved_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
+                                @endif
                             </div>
                         </td>
 

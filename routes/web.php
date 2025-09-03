@@ -150,7 +150,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [ExecutivesController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [ExecutivesController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [ExecutivesController::class, 'destroy'])->name('destroy');
-        Route::get('/get-districts/{state_id}', [ExecutivesController::class, 'getDistricts']);
+        Route::get('/get-districts/{state_id}', [ExecutivesController::class, 'getDistricts'])->name('districts');
         Route::post('bulk-upload', [ExecutivesController::class, 'bulkUpload'])->name('bulkUpload');
     });
 

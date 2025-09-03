@@ -111,8 +111,8 @@ class PromotorsImport implements ToModel, WithHeadingRow, WithValidation
             'district'       => 'required|string',
             'pincode'        => 'nullable|digits:6',
             'promotortype'  => 'required|string|exists:promotor_types,promotor_type',
-            'dealerid'         => 'required|string',
-            'executiveid'      => 'nullable|string',
+            'dealerid'         => 'required|string|exists:dealers,tally_dealer_id',
+            'executiveid'      => 'nullable|string|exists:executives,unique_executive_id',
         ];
     }
 }

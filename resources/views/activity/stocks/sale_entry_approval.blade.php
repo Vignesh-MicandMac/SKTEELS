@@ -105,7 +105,7 @@
                         <th>Promotor Name</th>
                         <th>Quantity</th>
                         <th>Obtained Points</th>
-                        <th>Approved Status</th>
+                        <!-- <th>Approved Status</th> -->
                         <th>Site Details</th>
                         <th>Declined Reason</th>
                         <th>Actions</th>
@@ -121,15 +121,15 @@
                         <td>{{ $sale_entry->promotor->name ?? 'N/A'}}</td>
                         <td>{{ $sale_entry->quantity ?? 'N/A' }}</td>
                         <td>{{ $sale_entry->obtained_points ?? 'N/A'}}</td>
-                        <td>
-                            @if($sale_entry->approved_status == 1)
+                        <!-- <td> -->
+                            {{-- @if($sale_entry->approved_status == 1)
                             <span class="badge bg-success">Approved</span>
                             @elseif($sale_entry->approved_status == 2)
                             <span class="badge bg-danger">UnApproved</span>
                             @else
                             <span class="badge bg-warning">Pending</span>
-                            @endif
-                        </td>
+                            @endif --}}
+                        <!-- </td> -->
 
 
 
@@ -143,29 +143,28 @@
                         </td>
                         <td>{{ $sale_entry->declined_reason ?? 'N/A'}}</td>
 
-
-
-
                         <td>
                             <div class="d-flex gap-2">
 
-                                {{-- @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 2) --}}
+                                @if($sale_entry->approved_status == 0)
                                 <button
                                     type="button"
-                                    class="btn btn-success btn-sm py-0 px-2"
+                                    class="btn btn-primary btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $sale_entry->id }}, 1)">
                                     Approve
                                 </button>
-                                {{-- @endif --}}
 
-                                {{-- @if($sale_entry->approved_status == 0 || $sale_entry->approved_status == 1) --}}
                                 <button
                                     type="button"
-                                    class="btn btn-danger btn-sm py-0 px-2"
+                                    class="btn btn-dark btn-sm py-0 px-2"
                                     onclick="updateStatus({{ $sale_entry->id }}, 2)">
                                     UnApprove
                                 </button>
-                                {{-- @endif --}}
+                                @elseif($sale_entry->approved_status == 1)
+                                <span class="badge bg-success">Approved</span>
+                                @elseif($sale_entry->approved_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
+                                @endif
                             </div>
                         </td>
 

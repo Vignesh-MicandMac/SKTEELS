@@ -44,8 +44,8 @@ class ExecutiveDealerMappingImport implements ToModel, WithHeadingRow, WithValid
     public function rules(): array
     {
         return [
-            'executiveid' => ['required', 'string'],
-            'dealerid'    => ['required', 'string'],
+            'executiveid' => ['required', 'string', 'exists:executives,unique_executive_id'],
+            'dealerid'    => ['required', 'string', 'exists:dealers,tally_dealer_id'],
         ];
     }
 }
