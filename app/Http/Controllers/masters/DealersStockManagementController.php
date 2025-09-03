@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\masters;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ClosingStocksImport;
+use App\Imports\StocksImport;
 use App\Models\Dealers;
 use App\Models\DealersStock;
 use App\Models\Promotor;
@@ -11,6 +13,7 @@ use App\Models\PromotorSaleEntry;
 use App\Models\SiteEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DealersStockManagementController extends Controller
 {
@@ -416,6 +419,34 @@ class DealersStockManagementController extends Controller
             return response()->json(['success' => 'Redeem UnApproved successfully!']);
         } else {
             return response()->json(['error' => 'Something went Wrong'], 422);
+        }
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            Excel::import(new StocksImport, $request->file('file'));
+            return redirect()->route('activity.stocks.index')->with('success', 'Stocks uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    public function closingStockBulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            Excel::import(new ClosingStocksImport, $request->file('file'));
+            return redirect()->route('activity.stocks.closing_stock_index')->with('success', 'Closing Stocks uploaded successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }

@@ -233,6 +233,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/promotors-approval-update/{id}', [DealersStockManagementController::class, 'promotors_approval_update'])->name('promotors_approval_update');
         Route::get('/redeem-approval', [DealersStockManagementController::class, 'redeem_approval'])->name('redeem_approval');
         Route::post('/redeem-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'redeeem_approval_or_unapproval'])->name('redeeem_approval_or_unapproval');
+        Route::post('bulk-upload', [DealersStockManagementController::class, 'bulkUpload'])->name('bulkUpload');
+        Route::post('closing-stock-bulk-upload', [DealersStockManagementController::class, 'closingStockBulkUpload'])->name('closingStockBulkUpload');
     });
 
 
