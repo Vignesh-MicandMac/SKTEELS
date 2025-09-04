@@ -105,10 +105,11 @@
                         <th>Promotor Name</th>
                         <th>Quantity</th>
                         <th>Obtained Points</th>
-                        <!-- <th>Approved Status</th> -->
                         <th>Site Details</th>
-                        <th>Declined Reason</th>
-                        <th>Actions</th>
+                        <th>SO Approved Status</th>
+                        <th>SO Declined Reason</th>
+                        <th>Admin Approved Status</th>
+                        <th>Admin Declined Reason</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,7 +123,7 @@
                         <td>{{ $sale_entry->quantity ?? 'N/A' }}</td>
                         <td>{{ $sale_entry->obtained_points ?? 'N/A'}}</td>
                         <!-- <td> -->
-                            {{-- @if($sale_entry->approved_status == 1)
+                        {{-- @if($sale_entry->approved_status == 1)
                             <span class="badge bg-success">Approved</span>
                             @elseif($sale_entry->approved_status == 2)
                             <span class="badge bg-danger">UnApproved</span>
@@ -141,12 +142,40 @@
                                 View
                             </button>
                         </td>
-                        <td>{{ $sale_entry->declined_reason ?? 'N/A'}}</td>
 
                         <td>
                             <div class="d-flex gap-2">
 
-                                @if($sale_entry->approved_status == 0)
+                                @if($sale_entry->so_approved_status == 0)
+                                <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm py-0 px-2"
+                                    onclick="executive_approval_status({{ $sale_entry->id }}, 1)">
+                                    Approve
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-dark btn-sm py-0 px-2"
+                                    onclick="executive_approval_status({{ $sale_entry->id }}, 2)">
+                                    UnApprove
+                                </button>
+                                @elseif($sale_entry->so_approved_status == 1)
+                                <span class="badge bg-success">Approved</span>
+                                @elseif($sale_entry->so_approved_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
+                                @endif
+                            </div>
+                        </td>
+
+
+
+                        <td>{{ $sale_entry->so_declined_reason ?? 'N/A'}}</td>
+
+                        <td>
+                            <div class="d-flex gap-2">
+
+                                @if($sale_entry->so_approved_status == 1 && $sale_entry->approved_status == 0)
                                 <button
                                     type="button"
                                     class="btn btn-primary btn-sm py-0 px-2"
@@ -160,13 +189,14 @@
                                     onclick="updateStatus({{ $sale_entry->id }}, 2)">
                                     UnApprove
                                 </button>
+                                @elseif($sale_entry->so_approved_status == 2 || $sale_entry->approved_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
                                 @elseif($sale_entry->approved_status == 1)
                                 <span class="badge bg-success">Approved</span>
-                                @elseif($sale_entry->approved_status == 2)
-                                <span class="badge bg-danger">UnApproved</span>
                                 @endif
                             </div>
                         </td>
+                        <td>{{ $sale_entry->declined_reason ?? 'N/A'}}</td>
 
                     </tr>
                     @endforeach
@@ -362,6 +392,7 @@
     //     });
     // }
 
+    //Admin APPROVAL STATUS CHANGES
     function updateStatus(id, status) {
         if (status == 1) {
             // Approve confirmation (no reason needed)
@@ -468,55 +499,119 @@
         });
     }
 
+    //Admin APPROVAL STATUS CHANGES ENDS
 
 
-    // function updateStatus(id, status) {
-    //     console.log('status', status);
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You are about to change the status.",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: status == 1 ? '#28a745' : '#dc3545',
-    //         cancelButtonColor: '#6c757d',
-    //         confirmButtonText: status == 1 ? 'Approve' : 'UnApprove'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             $.ajax({
-    //                 url: '/activity/stocks/sale-entry-approval-or-unapproval/' + id,
-    //                 type: 'POST',
-    //                 data: {
-    //                     _token: '{{ csrf_token() }}',
-    //                     approved_status: status
-    //                 },
-    //                 success: function(response) {
-    //                     Swal.fire({
-    //                         icon: 'success',
-    //                         title: 'Success!',
-    //                         text: response.success || 'Status updated successfully!',
-    //                         timer: 1500,
-    //                         showConfirmButton: false
-    //                     });
-    //                     setTimeout(() => location.reload(), 1600);
-    //                 },
-    //                 error: function(xhr) {
-    //                     let errorMessage = "Something went wrong.";
+    //SO OR EXECUTIVE APPROVAL STATUS CHANGES
+    function executive_approval_status(id, status) {
+        if (status == 1) {
+            // Approve confirmation (no reason needed)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to approve this entry.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Approve',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    send_So_StatusUpdate(id, status, null);
+                }
 
-    //                     // Check if backend sent JSON with "error"
-    //                     if (xhr.responseJSON && xhr.responseJSON.error) {
-    //                         errorMessage = xhr.responseJSON.error;
-    //                     }
+                cleanupAfterSwal();
+            }).catch((error) => {
 
-    //                     Swal.fire({
-    //                         icon: 'error',
-    //                         title: 'Error!',
-    //                         text: errorMessage,
-    //                     });
-    //                 }
-    //             });
-    //         }
-    //     });
-    // }
+                cleanupAfterSwal();
+            });
+        } else if (status == 2) {
+            // UnApprove - Ask reason
+            Swal.fire({
+                title: 'Reason For UnApproval',
+                input: 'textarea',
+                inputPlaceholder: 'Enter reason...',
+                inputAttributes: {
+                    style: 'min-height:40px;font-size:13px;'
+                },
+                width: 400,
+                customClass: {
+                    confirmButton: 'swal2-sm-button',
+                    cancelButton: 'swal2-sm-button',
+                    popup: 'swal2-sm-popup',
+                    title: 'swal2-sm-title'
+                },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Reason required!';
+                    }
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    send_So_StatusUpdate(id, status, result.value);
+                }
+
+                cleanupAfterSwal();
+            }).catch((error) => {
+
+                cleanupAfterSwal();
+            });
+        }
+    }
+
+
+    function cleanupAfterSwal() {
+
+        document.body.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+        document.documentElement.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+
+        $('.swal2-container').remove();
+        document.body.focus();
+    }
+
+    function send_So_StatusUpdate(id, status, reason = null) {
+        $.ajax({
+            url: '/activity/stocks/so-sale-entry-approval-or-unapproval/' + id,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                approved_status: status,
+                declined_reason: reason
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.success || 'Status updated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                setTimeout(() => location.reload(), 1600);
+            },
+            error: function(xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMessage,
+                });
+            }
+        });
+    }
+
+    //SO OR EXECUTIVE APPROVAL STATUS CHANGES ENDS
+
+
 
     //SITE DETAILS
     var siteModal = document.getElementById('siteModal');

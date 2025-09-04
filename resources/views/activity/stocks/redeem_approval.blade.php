@@ -99,9 +99,10 @@
                         <th>Promotor Points</th>
                         <th>Product Redeem Points</th>
                         <th>Balance Promotor Points</th>
-                        <th>Declined Reason</th>
-                        <!-- <th>Approved Status</th> -->
-                        <th>Actions</th>
+                        <th>SO Approved Status</th>
+                        <th>SO Declined Reason</th>
+                        <th>Admin Approved Status</th>
+                        <th>Admin Declined Reason</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,7 +119,34 @@
                         <td>{{ $redeem_product->promotor_points ?? 'N/A'}}</td>
                         <td>{{ $redeem_product->product_redeem_points ?? 'N/A'}}</td>
                         <td>{{ $redeem_product->balance_promotor_points ?? 'N/A'}}</td>
-                        <td>{{ $redeem_product->declined_reason ?? 'N/A'}}</td>
+
+                        <td>
+                            <div class="d-flex gap-2">
+
+                                @if($redeem_product->so_approved_status == 0 )
+                                <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm py-0 px-2"
+                                    onclick="executive_approval_status({{ $redeem_product->id }}, 1)">
+                                    Approve
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-dark btn-sm py-0 px-2"
+                                    onclick="executive_approval_status({{ $redeem_product->id }}, 2)">
+                                    UnApprove
+                                </button>
+                                @elseif($redeem_product->so_approved_status == 1)
+                                <span class="badge bg-success">Approved</span>
+                                @elseif($redeem_product->so_approved_status == 2)
+                                <span class="badge bg-danger">UnApproved</span>
+                                @endif
+                            </div>
+                        </td>
+
+
+                        <td>{{ $redeem_product->so_declined_reason ?? 'N/A'}}</td>
                         <!-- <td> -->
                         {{-- @if($redeem_product->approved_status == 1)
                             <span class="badge bg-success">Approved</span>
@@ -131,7 +159,7 @@
                         <td>
                             <div class="d-flex gap-2">
 
-                                @if($redeem_product->approved_status == 0 )
+                                @if($redeem_product->so_approved_status == 1 && $redeem_product->approved_status == 0 )
                                 <button
                                     type="button"
                                     class="btn btn-primary btn-sm py-0 px-2"
@@ -147,11 +175,12 @@
                                 </button>
                                 @elseif($redeem_product->approved_status == 1)
                                 <span class="badge bg-success">Approved</span>
-                                @elseif($redeem_product->approved_status == 2)
+                                @elseif($redeem_product->so_approved_status == 2 || $redeem_product->approved_status == 2)
                                 <span class="badge bg-danger">UnApproved</span>
                                 @endif
                             </div>
                         </td>
+                        <td>{{ $redeem_product->declined_reason ?? 'N/A'}}</td>
 
                     </tr>
                     @endforeach
@@ -293,6 +322,8 @@
     //     });
     // }
 
+
+    //ADMIN REDEEM APPROVAL STATUS 
     function updateStatus(id, status) {
         if (status == 1) {
             // Approve confirmation (no reason needed)
@@ -398,6 +429,115 @@
             }
         });
     }
+    //ADMIN REDEEM APPROVAL STATUS ENDS
+
+    //SO OR EXECUTIVE REDEEM APPROVAL STATUS 
+    function executive_approval_status(id, status) {
+        if (status == 1) {
+            // Approve confirmation (no reason needed)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to approve this entry.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Approve',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    send_so_StatusUpdate(id, status, null);
+                }
+
+                cleanupAfterSwal();
+            }).catch((error) => {
+
+                cleanupAfterSwal();
+            });
+        } else if (status == 2) {
+            // UnApprove - Ask reason
+            Swal.fire({
+                title: 'Reason For UnApproval',
+                input: 'textarea',
+                inputPlaceholder: 'Enter reason...',
+                inputAttributes: {
+                    style: 'min-height:40px;font-size:13px;'
+                },
+                width: 400,
+                customClass: {
+                    confirmButton: 'swal2-sm-button',
+                    cancelButton: 'swal2-sm-button',
+                    popup: 'swal2-sm-popup',
+                    title: 'swal2-sm-title'
+                },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Reason required!';
+                    }
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    send_so_StatusUpdate(id, status, result.value);
+                }
+
+                cleanupAfterSwal();
+            }).catch((error) => {
+
+                cleanupAfterSwal();
+            });
+        }
+    }
+
+
+    function cleanupAfterSwal() {
+
+        document.body.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+        document.documentElement.classList.remove('swal2-shown', 'swal2-no-backdrop', 'swal2-toast-shown');
+
+        $('.swal2-container').remove();
+        document.body.focus();
+    }
+
+    function send_so_StatusUpdate(id, status, reason = null) {
+        $.ajax({
+            url: '/activity/stocks/so-redeem-approval-or-unapproval/' + id,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                approved_status: status,
+                declined_reason: reason
+            },
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.success || 'Status updated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                setTimeout(() => location.reload(), 1600);
+            },
+            error: function(xhr) {
+                let errorMessage = "Something went wrong.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMessage,
+                });
+            }
+        });
+    }
+    //SO OR EXECUTIVE REDEEM APPROVAL STATUS ENDS
 </script>
 <style>
     .dataTables_wrapper .dataTables_filter input {

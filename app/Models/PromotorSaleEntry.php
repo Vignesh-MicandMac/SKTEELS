@@ -17,7 +17,9 @@ class PromotorSaleEntry extends Model
         'executive_id',
         'quantity',
         'approved_status',
-        'obtained_points'
+        'obtained_points',
+        'so_approved_status',
+        'so_declined_reason',
     ];
 
     public function promotor()

@@ -22,6 +22,8 @@ class PromotorRedeemProduct extends Model
         'balance_promotor_points',
         'approved_status',
         'declined_reason',
+        'so_approved_status',
+        'so_declined_reason',
     ];
 
     public function promotor()

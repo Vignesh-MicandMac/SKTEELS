@@ -328,6 +328,30 @@ class DealersStockManagementController extends Controller
         }
     }
 
+    public function so_sale_entry_approval_or_unapproval(Request $request, $id)
+    {
+
+
+        if ($request->approved_status == 1) {
+
+            $sale_entry = PromotorSaleEntry::findOrFail($id);
+            $sale_entry->so_approved_status = $request->approved_status;
+            $sale_entry->save();
+
+            return response()->json(['success' => 'SO Approved successfully!']);
+        }
+
+        if ($request->approved_status == 2) {
+
+            $sale_entry = PromotorSaleEntry::findOrFail($id);
+            $sale_entry->so_approved_status = $request->approved_status;
+            $sale_entry->so_declined_reason = $request->declined_reason ?? NULL;
+            $sale_entry->save();
+
+            return response()->json(['success' => 'SO UnApproved successfully!']);
+        }
+    }
+
     public function promotors_approval_list(Request $request)
     {
         $promotors = Promotor::whereNull('deleted_at')->get();
@@ -417,6 +441,35 @@ class DealersStockManagementController extends Controller
             ]);
 
             return response()->json(['success' => 'Redeem UnApproved successfully!']);
+        } else {
+            return response()->json(['error' => 'Something went Wrong'], 422);
+        }
+    }
+
+
+    public function so_redeeem_approval_or_unapproval(Request $request, $id)
+    {
+
+        if ($request->approved_status == 1) {
+
+            $gift_product = PromotorRedeemProduct::where('id', $id)->whereNull('deleted_at')->first();
+            $gift_product->update([
+                'so_approved_status' => $request->approved_status,
+            ]);
+
+            return response()->json(['success' => 'SO Redeem Approved successfully!']);
+        }
+
+        if ($request->approved_status == 2) {
+
+            $gift_product = PromotorRedeemProduct::where('id', $id)->whereNull('deleted_at')->first();
+
+            $gift_product->update([
+                'so_approved_status' => $request->approved_status,
+                'so_declined_reason' => $request->declined_reason ?? NULL,
+            ]);
+
+            return response()->json(['success' => 'SO Redeem UnApproved successfully!']);
         } else {
             return response()->json(['error' => 'Something went Wrong'], 422);
         }

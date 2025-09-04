@@ -229,10 +229,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/site-entry', [DealersStockManagementController::class, 'site_entry'])->name('site_entry');
         // Route::post('/sale-entry-approval/{id}', [DealersStockManagementController::class, 'sale_entry_approval'])->name('sale_entry_approval');
         Route::post('/sale-entry-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'sale_entry_approval_or_unapproval'])->name('sale_entry_approval_or_unapproval');
+        Route::post('/so-sale-entry-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'so_sale_entry_approval_or_unapproval'])->name('so_sale_entry_approval_or_unapproval');
         Route::get('/promotors-approval', [DealersStockManagementController::class, 'promotors_approval_list'])->name('promotors_approval');
         Route::post('/promotors-approval-update/{id}', [DealersStockManagementController::class, 'promotors_approval_update'])->name('promotors_approval_update');
         Route::get('/redeem-approval', [DealersStockManagementController::class, 'redeem_approval'])->name('redeem_approval');
         Route::post('/redeem-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'redeeem_approval_or_unapproval'])->name('redeeem_approval_or_unapproval');
+        Route::post('/so-redeem-approval-or-unapproval/{id}', [DealersStockManagementController::class, 'so_redeeem_approval_or_unapproval'])->name('so_redeeem_approval_or_unapproval');
         Route::post('bulk-upload', [DealersStockManagementController::class, 'bulkUpload'])->name('bulkUpload');
         Route::post('closing-stock-bulk-upload', [DealersStockManagementController::class, 'closingStockBulkUpload'])->name('closingStockBulkUpload');
     });
