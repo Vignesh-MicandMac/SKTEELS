@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="small mb-1">Total Promotors</div>
+                        <div class="small mb-1">Total Influencers</div>
                         <h5 class="mb-0">{{ $promotors }}</h5>
                     </div>
                 </div>
@@ -143,9 +143,31 @@
             </div>
         </div>
     </div>
+    
+
+     <!-- Promotor Points Chart -->
+    <div class="col-6">
+        <div class="card h-100">
+            <div class="card-header">Promotor Points Leaderboard</div>
+            <div class="card-body">
+                <canvas id="promotorPointsChart" style="height:250px; width:250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dealer vs Executive Pie Chart -->
+    <div class="col-6">
+        <div class="card h-100">
+            <div class="card-header">Dealer vs Executive Sale Entries</div>
+            <div class="card-body">
+                <canvas id="dealerExecutiveChart" style="height:250px; width:250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Sales Trend Chart -->
-    <div class="col-md-12 col-lg-6">
+    <div class="col-md-12 col-lg-12">
         <div class="card h-100">
             <div class="card-header">Sales Trend</div>
             <div class="card-body">
@@ -154,17 +176,11 @@
         </div>
     </div>
 
-    <!-- Promotor Points Chart -->
-    <div class="col-6">
-        <div class="card h-100">
-            <div class="card-header">Promotor Points Leaderboard</div>
-            <div class="card-body">
-                <canvas id="promotorPointsChart" style="min-height:350px;"></canvas>
-            </div>
-        </div>
-    </div>
+   
+   
 
-    
+
+
 </div>
 @endsection
 
@@ -232,21 +248,55 @@
         }
     });
 
-    // Promotor Points Leaderboard
-    new Chart(document.getElementById('promotorPointsChart'), {
-        type: 'bar',
-        data: {
-            labels: @json($promotorschart -> pluck('name')),
-            datasets: [{
-                label: 'Points',
-                data: @json($promotorschart -> pluck('points')),
-                backgroundColor: '#9966ff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
+   // Promotor Points Leaderboard - Doughnut Chart
+const promotors = @json($promotorschart->pluck('name'));
+const points = @json($promotorschart->pluck('points'));
+
+// Generate random colors for each promotor
+const colors = promotors.map(() => '#' + Math.floor(Math.random()*16777215).toString(16));
+
+new Chart(document.getElementById('promotorPointsChart'), {
+    type: 'doughnut', // changed from 'bar' to 'doughnut'
+    data: {
+        labels: promotors,
+        datasets: [{
+            label: 'Points',
+            data: points,
+            backgroundColor: colors // assign different color to each user
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right'
+            }
         }
-    });
+    }
+});
+
+
+    // Dealer vs Executive Sale Entries
+        new Chart(document.getElementById('dealerExecutiveChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Dealer', 'Executive'],
+                datasets: [{
+                        label: 'Sale Entries',
+                        data: [{{ $dealerCount }}, {{ $executiveCount }}],
+                        backgroundColor: ['#36a2eb', '#ff6384']
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+
+
+
+
 </script>
 @endpush

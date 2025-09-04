@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Promotor;
 use App\Models\PromotorRedeemedGifts;
 use App\Models\PromotorRedeemProduct;
+use App\Models\PromotorSaleEntry;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,30 @@ class DashBoardController extends Controller
         // Promotor points leaderboard
         $promotorschart = Promotor::select('name', 'points')->orderByDesc('points')->limit(10)->get();
 
-        return view('dashboard', compact('dealers', 'executives', 'promotors', 'products', 'redeems', 'users', 'dealerStocks', 'salesTrend', 'promotorschart'));
+        //Sale entry count based on dealer and executive 
+        $dealerCount = PromotorSaleEntry::whereNotNull('dealer_id')->count();
+        $executiveCount = PromotorSaleEntry::whereNotNull('executive_id')->count();
+
+        $salesTotals = [
+            'dispatch' => $salesTrend->sum('dispatch'),
+            'promoter_sales' => $salesTrend->sum('promoter_sales'),
+            'other_sales' => $salesTrend->sum('other_sales'),
+        ];
+
+        return view('dashboard', compact(
+            'dealers',
+            'executives',
+            'promotors',
+            'products',
+            'redeems',
+            'users',
+            'dealerStocks',
+            'salesTrend',
+            'promotorschart',
+            'dealerCount',
+            'executiveCount',
+            'salesTotals',
+        ));
     }
 
     /**
