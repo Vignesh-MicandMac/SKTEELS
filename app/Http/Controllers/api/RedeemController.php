@@ -48,8 +48,8 @@ class RedeemController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            // 'promotor_id' => 'required|integer|exists:promotors,id',
-            'executive_id' => 'required|integer|exists:executives,id',
+            'promotor_id' => 'required|integer|exists:promotors,id',
+            // 'executive_id' => 'required|integer|exists:executives,id',
         ]);
 
         if ($validator->fails()) {
@@ -60,7 +60,7 @@ class RedeemController extends Controller
             ], 422);
         }
 
-        $promotor_sites = SiteEntry::where('executive_id', $request->executive_id)->whereNull('deleted_at')->get()
+        $promotor_sites = SiteEntry::where('promotor_id', $request->promotor_id)->whereNull('deleted_at')->get()
             ->map(function ($promotor_sites) {
                 $promotor_sites->img = asset('storage/' . $promotor_sites->img);
                 return $promotor_sites;

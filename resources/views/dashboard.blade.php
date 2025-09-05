@@ -134,16 +134,17 @@
 
 <!-- Charts Section -->
 <div class="row gy-4 mt-3">
-    <!-- Dealer Stock Chart -->
-    <div class="col-md-12 col-lg-12">
-        <div class="card h-100">
-            <div class="card-header">Dealer Stock Overview</div>
-            <div class="card-body">
-                <canvas id="dealerStockChart" style="min-height:300px;"></canvas>
-            </div>
+
+    {{-- //Top Selling --}}
+   <div class="col-md-12">
+    <div class="card h-100">
+        <div class="card-header">Top Selling Dealers & Executives</div>
+        <div class="card-body">
+            <canvas id="topSalesChart" style="min-height:300px;"></canvas>
         </div>
     </div>
-    
+</div>
+
 
      <!-- Promotor Points Chart -->
     <div class="col-6">
@@ -166,6 +167,17 @@
     </div>
 
 
+      <!-- Dealer Stock Chart -->
+    <div class="col-md-12 col-lg-12">
+        <div class="card h-100">
+            <div class="card-header">Dealer Stock Overview</div>
+            <div class="card-body">
+                <canvas id="dealerStockChart" style="min-height:300px;"></canvas>
+            </div>
+        </div>
+    </div>
+    
+
     <!-- Sales Trend Chart -->
     <div class="col-md-12 col-lg-12">
         <div class="card h-100">
@@ -177,7 +189,7 @@
     </div>
 
    
-   
+
 
 
 
@@ -277,26 +289,131 @@ new Chart(document.getElementById('promotorPointsChart'), {
 });
 
 
-    // Dealer vs Executive Sale Entries
-        new Chart(document.getElementById('dealerExecutiveChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Dealer', 'Executive'],
-                datasets: [{
-                        label: 'Sale Entries',
-                        data: [{{ $dealerCount }}, {{ $executiveCount }}],
-                        backgroundColor: ['#36a2eb', '#ff6384']
+   // Dealer vs Executive Sale Entries - Bigger & Simpler
+new Chart(document.getElementById('dealerExecutiveChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Dealers', 'Executives'],
+        datasets: [{
+            data: [{{ $dealerCount }}, {{ $executiveCount }}],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.85)', // Blue
+                'rgba(255, 99, 132, 0.85)'  // Red
+            ],
+            borderColor: '#fff',
+            borderWidth: 3,
+            hoverOffset: 20
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%', // Thinner ring for bigger appearance
+        radius: '90%', // Maximize size
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: { size: 16 },
+                    generateLabels: chart => {
+                        const data = chart.data.datasets[0].data;
+                        const total = data.reduce((a, b) => a + b, 0);
+                        return chart.data.labels.map((label, i) => ({
+                            text: `${label}: ${data[i]} (${(data[i]/total*100).toFixed(1)}%)`,
+                            fillStyle: chart.data.datasets[0].backgroundColor[i]
+                        }));
                     }
-                ]
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const value = ctx.parsed;
+                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                        return `${ctx.label}: ${value} (${(value/total*100).toFixed(1)}%)`;
+                    }
+                }
             }
-        });
+        }
+    }
+});
 
 
 
+  const dealerLabels = {!! json_encode($topDealers->pluck('dealer.name')) !!};
+const dealerData = {!! json_encode($topDealers->pluck('total_quantity')) !!};
+const executiveLabels = {!! json_encode($topExecutives->pluck('executive.name')) !!};
+const executiveData = {!! json_encode($topExecutives->pluck('total_quantity')) !!};
 
+// Create grouped bar chart
+new Chart(document.getElementById('topSalesChart'), {
+    type: 'bar',
+    data: {
+        // Combine labels for x-axis
+        labels: [...dealerLabels, ...executiveLabels],
+        datasets: [
+            {
+                label: 'Dealers',
+                data: [...dealerData, ...Array(executiveLabels.length).fill(0)], // Pad with zeros for executives
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'Executives',
+                data: [...Array(dealerLabels.length).fill(0), ...executiveData], // Pad with zeros for dealers
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 14 },
+                    color: '#333'
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.raw} units`;
+                    }
+                }
+            },
+            title: {
+                display: true,
+                text: 'Top Selling Dealers vs Executives',
+                font: { size: 16 }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Sales Representatives'
+                },
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Units Sold'
+                },
+                grid: {
+                    color: 'rgba(200,200,200,0.3)'
+                }
+            }
+        }
+    }
+});
 </script>
 @endpush

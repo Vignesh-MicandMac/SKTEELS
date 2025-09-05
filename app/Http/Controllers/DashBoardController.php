@@ -55,6 +55,21 @@ class DashBoardController extends Controller
             'promoter_sales' => $salesTrend->sum('promoter_sales'),
             'other_sales' => $salesTrend->sum('other_sales'),
         ];
+        // Top Dealers
+        $topDealers = PromotorSaleEntry::select('dealer_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('dealer_id')
+            ->with('dealer')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get();
+
+        // Top Executives
+        $topExecutives = PromotorSaleEntry::select('executive_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('executive_id')
+            ->with('executive')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get();
 
         return view('dashboard', compact(
             'dealers',
@@ -69,6 +84,8 @@ class DashBoardController extends Controller
             'dealerCount',
             'executiveCount',
             'salesTotals',
+            'topDealers',
+            'topExecutives',
         ));
     }
 
