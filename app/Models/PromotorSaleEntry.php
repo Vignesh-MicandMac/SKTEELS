@@ -12,6 +12,7 @@ class PromotorSaleEntry extends Model
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
+        'site_id',
         'promotor_id',
         'dealer_id',
         'executive_id',

@@ -437,6 +437,7 @@ class DealerController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
+            'site_id' => 'required|integer|exists:site_entries,id',
             'promotor_id' => 'required|integer|exists:promotors,id',
             'dealer_id' => 'required|integer|exists:dealers,id',
             'executive_id' => 'nullable|integer|exists:executives,id',
@@ -472,6 +473,7 @@ class DealerController extends Controller
             }
 
             $saleEntry = PromotorSaleEntry::create([
+                'site_id' => $request->site_id,
                 'promotor_id' => $request->promotor_id,
                 'dealer_id' => $request->dealer_id,
                 'executive_id' => $request->executive_id ?? null,
