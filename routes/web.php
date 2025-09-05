@@ -266,11 +266,16 @@ Route::middleware(['auth'])->group(function () {
     //Reports
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/influencer-list', [ReportController::class, 'influencer_list'])->name('influencer_list');
+        Route::get('/influencer-list/export', [ReportController::class, 'exportInfluencerList'])->name('influencer_list.export');
         Route::get('/sale-entry-list', [ReportController::class, 'sale_entry_list'])->name('sale_entry_list');
+        Route::get('/sale-entry-list/export', [ReportController::class, 'exportSaleEntryList'])->name('sale_entry_list.export');
         Route::get('/redeem-points-list', [ReportController::class, 'redeem_points_list'])->name('redeem_points_list');
+        Route::get('/redeem-points-list/export', [ReportController::class, 'exportRedeemPointsList'])->name('redeem_points_list.export');
         Route::get('/redeem-gifts-list', [ReportController::class, 'redeem_gifts_list'])->name('redeem_gifts_list');
         Route::get('/redeem-gifts-list/export', [ReportController::class, 'exportRedeemGiftss'])->name('redeem_gifts_list.export');
         Route::get('/dealers-stock-list', [ReportController::class, 'dealer_stock_list'])->name('dealer_stock_list');
+        Route::get('/dealers-stock-list/export', [ReportController::class, 'exportDealerStockList'])->name('dealer_stock_list.export');
         Route::get('/sites-list', [ReportController::class, 'sites_list'])->name('sites_list');
+        Route::get('/sites-list/export', [ReportController::class, 'exportSitesList'])->name('sites_list.export');
     });
 });

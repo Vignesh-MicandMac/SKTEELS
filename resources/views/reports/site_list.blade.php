@@ -87,12 +87,23 @@
                     </div> -->
                 </div>
 
-                <div class="row justify-content-end">
+
+                 <div class="row justify-content-end mb-3">
                     <div class="col-sm-12 d-flex justify-content-end gap-2">
+                        <a href="{{ route('reports.sites_list.export', request()->all()) }}"
+                            class="btn btn-success btn-sm">Download Excel</a>
                         <a href="{{ route('reports.sites_list') }}" class="btn btn-light btn-sm">Clear</a>
                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                     </div>
                 </div>
+
+
+                {{-- <div class="row justify-content-end">
+                    <div class="col-sm-12 d-flex justify-content-end gap-2">
+                        <a href="{{ route('reports.sites_list') }}" class="btn btn-light btn-sm">Clear</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                </div> --}}
             </form>
 
         </div>

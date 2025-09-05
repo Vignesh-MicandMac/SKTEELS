@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers\masters;
 
+use App\Exports\DealerStockExport;
+use App\Exports\InfluencerListExport;
+use App\Exports\PromotorRedeemProductExport;
 use App\Exports\RedeemGiftsExport;
+use App\Exports\SaleEntryExport;
+use App\Exports\SiteEntryExport;
 use App\Http\Controllers\Controller;
 use App\Models\Dealers;
 use App\Models\DealersStock;
@@ -38,6 +43,12 @@ class ReportController extends Controller
         return view('reports.influencer_list', compact('promotors'));
     }
 
+    public function exportInfluencerList(Request $request)
+    {
+        return Excel::download(new InfluencerListExport($request), 'influencer_list.xlsx');
+    }
+
+
     public function sale_entry_list(Request $request)
     {
         $query = PromotorSaleEntry::with(['dealer', 'executive', 'promotor']);
@@ -66,6 +77,12 @@ class ReportController extends Controller
         $promotors = Promotor::whereNull('deleted_at')->get();
         return view('reports.sale_entry_list', compact('dealers', 'promotors', 'promotor_sale_entries'));
     }
+
+    public function exportSaleEntryList(Request $request)
+    {
+        return Excel::download(new SaleEntryExport($request), 'sale_entry_list.xlsx');
+    }
+
 
     public function redeem_points_list(Request $request)
     {
@@ -100,6 +117,11 @@ class ReportController extends Controller
         $promotors = Promotor::whereNull('deleted_at')->get();
 
         return view('reports.redeem_points_list ', compact('redeem_products', 'promotors', 'dealers', 'executives'));
+    }
+
+    public function exportRedeemPointsList(Request $request)
+    {
+        return Excel::download(new PromotorRedeemProductExport($request), 'promotor_redeem_points_list.xlsx');
     }
 
     public function redeem_gifts_list(Request $request)
@@ -163,6 +185,12 @@ class ReportController extends Controller
         return view('reports.dealer_stock_list ', compact('dealer_stocks', 'dealers'));
     }
 
+    public function exportDealerStockList(Request $request)
+    {
+        return Excel::download(new DealerStockExport($request), 'dealer_stocks.xlsx');
+    }
+
+
     public function sites_list(Request $request)
     {
         $query = SiteEntry::with(['dealer', 'executive', 'promotor', 'promotorType', 'state', 'district', 'pincode']);
@@ -192,5 +220,10 @@ class ReportController extends Controller
         $promotors = Promotor::whereNull('deleted_at')->get();
 
         return view('reports.site_list ', compact('sites_list', 'promotors', 'dealers', 'executives'));
+    }
+
+    public function exportSitesList(Request $request)
+    {
+        return Excel::download(new SiteEntryExport($request), 'site_entries.xlsx');
     }
 }
