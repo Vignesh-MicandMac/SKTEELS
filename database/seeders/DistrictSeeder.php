@@ -119,6 +119,7 @@ class DistrictSeeder extends Seeder
             ['id' => 4, 'state_id' => 2, 'district_name' => 'Kannur'],
             ['id' => 5, 'state_id' => 2, 'district_name' => 'Kasaragod'],
             ['id' => 6, 'state_id' => 2, 'district_name' => 'Kollam'],
+            ['id' => 111, 'state_id' => 2, 'district_name' => 'Kochi'],
             ['id' => 7, 'state_id' => 2, 'district_name' => 'Kottayam'],
             ['id' => 8, 'state_id' => 2, 'district_name' => 'Kozhikode'],
             ['id' => 9, 'state_id' => 2, 'district_name' => 'Malappuram'],
@@ -152,6 +153,7 @@ class DistrictSeeder extends Seeder
             ['id' => 72, 'state_id' => 3, 'district_name' => 'Koppal'],
             ['id' => 73, 'state_id' => 3, 'district_name' => 'Mandya'],
             ['id' => 74, 'state_id' => 3, 'district_name' => 'Mysuru'],
+            ['id' => 112, 'state_id' => 3, 'district_name' => 'Mangaluru'],
             ['id' => 75, 'state_id' => 3, 'district_name' => 'Raichur'],
             ['id' => 76, 'state_id' => 3, 'district_name' => 'Ramanagara'],
             ['id' => 77, 'state_id' => 3, 'district_name' => 'Shivamogga'],
@@ -161,6 +163,7 @@ class DistrictSeeder extends Seeder
             ['id' => 81, 'state_id' => 3, 'district_name' => 'Vijayanagara'],
             ['id' => 82, 'state_id' => 3, 'district_name' => 'Vijayapura'],
             ['id' => 83, 'state_id' => 3, 'district_name' => 'Yadgir'],
+            ['id' => 110, 'state_id' => 3, 'district_name' => 'Bengaluru'],
 
             // Andhra Pradesh (state_id: 4)
             ['id' => 84, 'state_id' => 4, 'district_name' => 'Alluri Sitharama Raju'],
@@ -187,6 +190,7 @@ class DistrictSeeder extends Seeder
             ['id' => 105, 'state_id' => 4, 'district_name' => 'Sri Sathya Sai'],
             ['id' => 106, 'state_id' => 4, 'district_name' => 'Srikakulam'],
             ['id' => 107, 'state_id' => 4, 'district_name' => 'Visakhapatnam'],
+            ['id' => 113, 'state_id' => 4, 'district_name' => 'Vijayawada'],
             ['id' => 108, 'state_id' => 4, 'district_name' => 'Vizianagaram'],
             ['id' => 109, 'state_id' => 4, 'district_name' => 'West Godavari'],
         ];
