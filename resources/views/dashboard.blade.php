@@ -138,7 +138,7 @@
     {{-- //Top Selling --}}
    <div class="col-md-12">
     <div class="card h-100">
-        <div class="card-header">Top Selling Dealers & Executives</div>
+        <div class="card-header"><b>Top Selling Dealers & Executives</b></div>
         <div class="card-body">
             <canvas id="topSalesChart" style="min-height:300px;"></canvas>
         </div>
@@ -149,7 +149,7 @@
      <!-- Promotor Points Chart -->
     <div class="col-6">
         <div class="card h-100">
-            <div class="card-header">Promotor Points Leaderboard</div>
+            <div class="card-header"><b>Promotor Points Leaderboard</b></div>
             <div class="card-body">
                 <canvas id="promotorPointsChart" style="height:250px; width:250px;"></canvas>
             </div>
@@ -159,7 +159,7 @@
     <!-- Dealer vs Executive Pie Chart -->
     <div class="col-6">
         <div class="card h-100">
-            <div class="card-header">Dealer vs Executive Sale Entries</div>
+            <div class="card-header"><b>Dealer vs Executive Sale Entries</b></div>
             <div class="card-body">
                 <canvas id="dealerExecutiveChart" style="height:250px; width:250px;"></canvas>
             </div>
@@ -170,7 +170,7 @@
       <!-- Dealer Stock Chart -->
     <div class="col-md-12 col-lg-12">
         <div class="card h-100">
-            <div class="card-header">Dealer Stock Overview</div>
+            <div class="card-header"><b>Dealer Stock Overview</b></div>
             <div class="card-body">
                 <canvas id="dealerStockChart" style="min-height:300px;"></canvas>
             </div>
@@ -181,9 +181,20 @@
     <!-- Sales Trend Chart -->
     <div class="col-md-12 col-lg-12">
         <div class="card h-100">
-            <div class="card-header">Sales Trend</div>
+            <div class="card-header"><b>Sales Trend</b></div>
             <div class="card-body">
                 <canvas id="salesTrendChart" style="min-height:300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Site Entry Chart -->
+    <div class="col-md-12 col-lg-12">
+        <div class="card h-100">
+            <div class="card-header"><b>Site Entries</b></div>
+            <div class="card-body">
+                <canvas id="siteEntriesChart" style="min-height:200px;"></canvas>
             </div>
         </div>
     </div>
@@ -356,15 +367,15 @@ new Chart(document.getElementById('topSalesChart'), {
             {
                 label: 'Dealers',
                 data: [...dealerData, ...Array(executiveLabels.length).fill(0)], // Pad with zeros for executives
-                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(255, 215, 0, 0.8)',
+                borderColor: 'rgba(255, 215, 0, 1)',
                 borderWidth: 2
             },
             {
                 label: 'Executives',
                 data: [...Array(dealerLabels.length).fill(0), ...executiveData], // Pad with zeros for dealers
-                backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(50, 50, 50, 0.7)', 
+                borderColor: 'rgba(50, 50, 50, 1)',
                 borderWidth: 2
             }
         ]
@@ -415,5 +426,79 @@ new Chart(document.getElementById('topSalesChart'), {
         }
     }
 });
+
+
+
+
+//Site Entry
+const siteEntries = @json($siteEntries);
+
+const labels = siteEntries.map(item => item.label);
+const dataValues = siteEntries.map(item => item.total);
+
+// Base color ranges for each group
+const dealerBase = [54, 162, 235];   // Blue tones for Dealers
+const executiveBase = [46, 204, 113]; // Green tones for Executives
+
+// Function to generate lighter variations within base range
+function getLightColor(base) {
+    const r = Math.min(255, base[0] + Math.floor(Math.random() * 30));
+    const g = Math.min(255, base[1] + Math.floor(Math.random() * 30));
+    const b = Math.min(255, base[2] + Math.floor(Math.random() * 30));
+    return `rgba(${r}, ${g}, ${b}, 0.8)`;
+}
+
+// Assign colors: Dealers always blue, Executives always green
+const backgroundColors = siteEntries.map(item =>
+    item.type === "Dealer"
+        ? getLightColor(dealerBase)
+        : getLightColor(executiveBase)
+);
+
+new Chart(document.getElementById("siteEntriesChart"), {
+    type: "polarArea",
+    data: {
+        labels: labels,
+        datasets: [{
+            data: dataValues,
+            backgroundColor: backgroundColors,
+            borderColor: "white",
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    generateLabels: function(chart) {
+                        return chart.data.labels.map((label, i) => {
+                            const type = siteEntries[i].type;
+                            return {
+                                text: `${label} (${type})`,
+                                fillStyle: backgroundColors[i]
+                            };
+                        });
+                    }
+                }
+            },
+            title: {
+                display: true,
+                text: "Dealer vs Executive Site Entries"
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const type = siteEntries[context.dataIndex].type;
+                        return `${type}: ${context.raw} entries`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+
 </script>
 @endpush

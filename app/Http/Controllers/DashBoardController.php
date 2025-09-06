@@ -10,6 +10,7 @@ use App\Models\Promotor;
 use App\Models\PromotorRedeemedGifts;
 use App\Models\PromotorRedeemProduct;
 use App\Models\PromotorSaleEntry;
+use App\Models\SiteEntry;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,38 @@ class DashBoardController extends Controller
             ->limit(5)
             ->get();
 
+
+        // Individual Dealer site entries
+        $dealersEntries = SiteEntry::with('dealer:id,name')
+            ->select('dealer_id', DB::raw('count(*) as total_entries'))
+            ->whereNotNull('dealer_id')
+            ->groupBy('dealer_id')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'label' => $row->dealer->name ?? 'Unknown Dealer',
+                    'total' => $row->total_entries,
+                    'type'  => 'Dealer'
+                ];
+            });
+
+        // Individual Executive site entries
+        $executivesEntries = SiteEntry::with('executive:id,name')
+            ->select('executive_id', DB::raw('count(*) as total_entries'))
+            ->whereNotNull('executive_id')
+            ->groupBy('executive_id')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'label' => $row->executive->name ?? 'Unknown Executive',
+                    'total' => $row->total_entries,
+                    'type'  => 'Executive'
+                ];
+            });
+
+        // Merge both but keep them separate in chart
+        $siteEntries = $dealersEntries->merge($executivesEntries);
+
         return view('dashboard', compact(
             'dealers',
             'executives',
@@ -86,6 +119,7 @@ class DashBoardController extends Controller
             'salesTotals',
             'topDealers',
             'topExecutives',
+            'siteEntries',
         ));
     }
 
