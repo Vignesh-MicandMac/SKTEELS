@@ -253,9 +253,9 @@
             $('#dealersTable').DataTable({
                 autoWidth: true,
                 responsive: true,
-                drawCallback: function() {
-                    $('.dataTables_paginate .pagination').addClass('pagination-sm');
-                },
+                // drawCallback: function() {
+                //     $('.dataTables_paginate .pagination').addClass('pagination-sm');
+                // },
                 // dom: '<"top"<"row"<"col-md-6"l><"col-md-6"f>>>rt<"bottom"<"row"<"col-md-6"i><"col-md-6"p>>>',
                 dom: '<"top"<"row"<"col-md-6"l><"col-md-6"f>>><"table-wrapper"rt><"bottom"<"row"<"col-md-6"i><"col-md-6"p>>>',
                 language: {
@@ -401,7 +401,7 @@
                 text: "You are about to approve this entry.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Approve',
                 allowOutsideClick: false,
@@ -439,7 +439,7 @@
                 },
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
-                confirmButtonColor: '#dc3545',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 allowOutsideClick: false,
                 allowEscapeKey: false
@@ -511,7 +511,7 @@
                 text: "You are about to approve this entry.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Approve',
                 allowOutsideClick: false,
@@ -549,7 +549,7 @@
                 },
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
-                confirmButtonColor: '#dc3545',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 allowOutsideClick: false,
                 allowEscapeKey: false

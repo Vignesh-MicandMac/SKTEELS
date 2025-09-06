@@ -167,16 +167,6 @@
                         next: "<i class='mdi mdi-chevron-right'>"
                     }
                 },
-                // columnDefs: [{
-                //         targets: 7, // Created At column (index 9)
-                //         type: 'date-dd-mm-yyyy'
-                //     },
-                //     {
-                //         targets: 8, // Actions column (index 10)
-                //         orderable: false,
-                //         searchable: false
-                //     }
-                // ],
                 initComplete: function() {
                     // Style the search input
                     $('.dataTables_filter input').addClass('form-control form-control-sm');

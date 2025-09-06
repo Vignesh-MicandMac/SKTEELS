@@ -180,7 +180,7 @@
     //         text: "You are about to change the status.",
     //         icon: 'warning',
     //         showCancelButton: true,
-    //         confirmButtonColor: status == 1 ? '#28a745' : '#dc3545',
+    //         confirmButtonColor: status == 1 ? '#ffd700' : '#ffd700',
     //         cancelButtonColor: '#6c757d',
     //         confirmButtonText: status == 1 ? 'Approve' : 'UnApprove'
     //     }).then((result) => {
@@ -223,7 +223,7 @@
                 text: "You are about to approve this entry.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Approve',
                 allowOutsideClick: false,
@@ -261,7 +261,7 @@
                 },
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
-                confirmButtonColor: '#dc3545',
+                confirmButtonColor: '#ffd700',
                 cancelButtonColor: '#6c757d',
                 allowOutsideClick: false,
                 allowEscapeKey: false
