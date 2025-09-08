@@ -199,6 +199,17 @@
         </div>
     </div>
 
+
+    <!-- Top Promotors Chart -->
+    <div class="col-md-12 col-lg-12">
+        <div class="card h-100">
+            <div class="card-header"><b>Top Promotors Sales</b></div>
+            <div class="card-body">
+                <canvas id="topPromotorsChart" style="min-height:300px;"></canvas>
+            </div>
+        </div>
+    </div>
+
    
 
 
@@ -499,6 +510,70 @@ new Chart(document.getElementById("siteEntriesChart"), {
     }
 });
 
+
+
+// Top Promotors
+
+
+  const promotorsData = @json($topPromotors);
+const promotorLabels = promotorsData.map(item => item.promotor ? item.promotor.name : "Unknown");
+const promotorSales = promotorsData.map(item => item.total_sales);
+
+const ctx = document.getElementById("topPromotorsChart").getContext("2d");
+const chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: promotorLabels,
+        datasets: [{
+            label: "Total Sales",
+            data: promotorSales,
+            backgroundColor: (context) => {
+                const chart = context.chart;
+                const { chartArea } = chart;
+                if (!chartArea) return;
+                const hue = (context.dataIndex * 40) % 360;
+                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, `hsl(${hue}, 70%, 50%)`);
+                gradient.addColorStop(1, `hsl(${hue}, 80%, 75%)`);
+                return gradient;
+            },
+            borderRadius: 15,
+            borderSkipped: false,
+            barPercentage: 0.6,
+            categoryPercentage: 0.5
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: "Top 10 Promotors by Sales",
+                color: "#4a4a4a",
+                font: { size: 20, family: 'sans-serif', weight: "bold" }
+            },
+            tooltip: {
+                backgroundColor: "rgba(0,0,0,0.8)",
+                titleFont: { size: 14, weight: "bold" },
+                bodyFont: { size: 13 },
+                padding: 12
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: "#888", font: { size: 12 } },
+                grid: { color: "rgba(200, 200, 200, 0.15)", drawBorder: false },
+                title: { display: true, text: "Total Quantity", color: "#666" }
+            },
+            x: {
+                ticks: { color: "#888", font: { size: 12 } },
+                grid: { display: false },
+            }
+        }
+    }
+});
 
 </script>
 @endpush

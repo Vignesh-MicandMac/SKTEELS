@@ -104,6 +104,18 @@ class DashBoardController extends Controller
         // Merge both but keep them separate in chart
         $siteEntries = $dealersEntries->merge($executivesEntries);
 
+        $topPromotors = PromotorSaleEntry::select(
+            'promotor_id',
+            DB::raw('SUM(quantity) as total_sales')
+        )
+            ->with('promotor:id,name')
+            ->whereNull('deleted_at')
+            ->groupBy('promotor_id')
+            ->orderByDesc('total_sales')
+            ->limit(10)
+            ->get();
+
+
         return view('dashboard', compact(
             'dealers',
             'executives',
@@ -120,6 +132,7 @@ class DashBoardController extends Controller
             'topDealers',
             'topExecutives',
             'siteEntries',
+            'topPromotors',
         ));
     }
 
