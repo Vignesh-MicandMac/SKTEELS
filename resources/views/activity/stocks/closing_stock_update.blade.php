@@ -5,24 +5,6 @@
 @section('content')
 <h5 class="py-3 mb-4"><span class="text-muted fw-light">Masters/</span> Closing Stock Update</h5>
 
-
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div id="dealer-info-card" style="display:none;">
-            <div class="card mb-4 border-primary text-center">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        Dealer Name: <strong id="dealer-name"></strong>
-                    </h5>
-                    <h5 class="mb-0">
-                        Current Stock: <strong id="dealer-stock"></strong>
-                    </h5>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -68,6 +50,26 @@
         </div>
     </div>
 </div>
+
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div id="dealer-info-card" style="display:none;">
+            <div class="card mb-4 border-primary text-center">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Dealer Name: <strong id="dealer-name"></strong>
+                    </h5>
+                    <h5 class="mb-0">
+                        Current Stock: <strong id="dealer-stock"></strong>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 <!-- Basic Layout & Basic with Icons -->
