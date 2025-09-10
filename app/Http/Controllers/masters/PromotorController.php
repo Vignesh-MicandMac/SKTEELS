@@ -342,7 +342,24 @@ class PromotorController extends Controller
 
         $promotor = Promotor::where('enroll_no', $request->enroll_no)->first();
 
-        PromotorDealerMapping::where('promotor_id', $promotor->id)->forceDelete();
+        // Get all already mapped dealer IDs for this promotor
+        $existingDealerMappings = PromotorDealerMapping::where('promotor_id', $promotor->id)
+            ->whereIn('dealer_id', $request->dealer_id)
+            ->with('dealer')
+            ->get();
+
+        if ($existingDealerMappings->isNotEmpty()) {
+
+            $dealerNames = $existingDealerMappings->pluck('dealer.name')->toArray();
+            $dealerList = implode(', ', $dealerNames);
+
+            return redirect()->back()
+                ->with('warning', 'The following dealers are already assigned to this promotor: ' . $dealerList)
+                ->withInput();
+        }
+
+
+        // PromotorDealerMapping::where('promotor_id', $promotor->id)->forceDelete();
 
         foreach ($request->dealer_id as $dealerId) {
             PromotorDealerMapping::create([

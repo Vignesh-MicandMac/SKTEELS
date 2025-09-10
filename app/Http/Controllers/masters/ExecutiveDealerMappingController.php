@@ -45,8 +45,26 @@ class ExecutiveDealerMappingController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Please Select all the fields')->withErrors($validator)->withInput();
+            return redirect()->back()->with('warning', $validator->errors()->first())->withErrors($validator)->withInput();
         }
+
+
+        // Check if any dealers already exist for this executive
+        $existingMappings = ExecutiveDealerMapping::where('executive_id', $request->executive_id)
+            ->whereIn('dealer_id', $request->dealer_ids)
+            ->with('dealer')
+            ->get();
+
+        if ($existingMappings->isNotEmpty()) {
+
+            $dealerNames = $existingMappings->pluck('dealer.name')->toArray();
+            $dealerList = implode(', ', $dealerNames);
+
+            return redirect()->back()
+                ->with('warning', 'The following dealers are already assigned to this executive: ' . $dealerList)
+                ->withInput();
+        }
+
 
         foreach ($request->dealer_ids as $dealer_id) {
             ExecutiveDealerMapping::create([
