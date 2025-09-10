@@ -81,6 +81,42 @@ class RedeemController extends Controller
         ], 200);
     }
 
+    public function executive_sites(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'promotor_id' => 'required|integer|exists:promotors,id',
+            'executive_id' => 'required|integer|exists:executives,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $executive_sites = SiteEntry::where('executive_id', $request->executive_id)->whereNull('deleted_at')->get()
+            ->map(function ($executive_sites) {
+                $executive_sites->img = asset('storage/' . $executive_sites->img);
+                return $executive_sites;
+            });
+
+        if ($executive_sites->isEmpty()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Sites Not found',
+                'data' => $executive_sites,
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Executive Sites Fetched successfully',
+            'data' => $executive_sites,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
