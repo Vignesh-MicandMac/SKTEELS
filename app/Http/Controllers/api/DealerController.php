@@ -504,74 +504,86 @@ class DealerController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
 
-        // $validator = Validator::make($request->all(), [
-        //     'promotor_id' => 'required|integer|exists:promotors,id',
-        //     'dealer_id' => 'required|integer|exists:dealers,id',
-        //     'executive_id' => 'nullable|integer|exists:executives,id',
-        //     'quantity' => 'required|numeric',
-        // ]);
+    public function dealer_sale_entries(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'dealer_id' => 'required|integer|exists:dealers,id',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'errors' => $validator->errors()
-        //     ], 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-        // try {
-        //     $quantity = $request->quantity;
+        $dealer_sale_entries = PromotorSaleEntry::with('promotor')->where('dealer_id', $request->dealer_id)->whereNull('deleted_at')->get()
+            ->map(function ($dealer_sale_entries) {
+                if ($dealer_sale_entries->promotor) {
+                    if (!empty($dealer_sale_entries->promotor->img_path) && !str_contains($dealer_sale_entries->promotor->img_path, 'http')) {
+                        $dealer_sale_entries->promotor->img_path = asset('storage/' . $dealer_sale_entries->promotor->img_path);
+                    }
+                }
 
-        //     $stockPoint = StocksPoint::where('kg', '>=', $quantity)->orderBy('kg', 'asc')->first();
+                return $dealer_sale_entries;
+            });
 
-        //     if (!$stockPoint) {
-        //         $stockPoint = StocksPoint::orderBy('kg', 'desc')->first();
-        //     }
-        //     $obtainedPoints = ($quantity / $stockPoint->kg) * $stockPoint->points;
+        if ($dealer_sale_entries->isEmpty()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Sale Entry Not found',
+                'data' => $dealer_sale_entries,
+            ], 200);
+        }
 
-        //     $dealer = PromotorSaleEntry::findOrFail($request->dealer_id);
+        return response()->json([
+            'status' => true,
+            'message' => 'Dealer Sale Entries Fetched successfully',
+            'data' => $dealer_sale_entries,
+        ], 200);
+    }
 
-        //     //update dealer stock
-        //     $update_dealer_stock = DealersStock::where('dealer_id', $dealer->dealer_id)->orderBy('id', 'desc')->first();
 
-        //     if ($update_dealer_stock && $update_dealer_stock->total_stock >= $dealer->quantity) {
+    public function executive_sale_entries(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'executive_id' => 'required|integer|exists:dealers,id',
+        ]);
 
-        //         $saleEntry = PromotorSaleEntry::create([
-        //             'promotor_id' => $request->promotor_id ?? NULL,
-        //             'dealer_id' => $request->dealer_id ?? NULL,
-        //             'executive_id' => $request->executive_id ?? NULL,
-        //             'quantity' => $request->quantity,
-        //             'approved_status' => '0',
-        //             'obtained_points' => $obtainedPoints,
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-        //         $balance_stock = $update_dealer_stock->total_stock - $dealer->quantity;
+        $executive_sale_entries = PromotorSaleEntry::with('promotor')->where('executive_id', $request->executive_id)->whereNull('deleted_at')->get()
+            ->map(function ($executive_sale_entries) {
+                if ($executive_sale_entries->promotor) {
+                    if (!empty($executive_sale_entries->promotor->img_path) && !str_contains($executive_sale_entries->promotor->img_path, 'http')) {
+                        $executive_sale_entries->promotor->img_path = asset('storage/' . $executive_sale_entries->promotor->img_path);
+                    }
+                }
 
-        //         $update_dealer_stock->update([
-        //             'promoter_sales' => $dealer->quantity,
-        //             'balance_stock' => $balance_stock,
-        //             'total_current_stock' => $balance_stock,
-        //         ]);
-        //     } else {
-        //         return response()->json([
-        //             'status' => false,
-        //             'message' => 'Requested Quantity is exceeded the available dealer stock',
-        //         ]);
-        //     }
+                return $executive_sale_entries;
+            });
 
-        //     return response()->json([
-        //         'status' => true,
-        //         'message' => 'Sale entry created and Dealer Stock Updated successfully',
-        //         'data' => $saleEntry
-        //     ]);
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'An error occurred while creating sale entry',
-        //         'error' => $e->getMessage()
-        //     ], 500);
-        // }
+        if ($executive_sale_entries->isEmpty()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Sale Entry Not found',
+                'data' => $executive_sale_entries,
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Executive Sale Entries Fetched successfully',
+            'data' => $executive_sale_entries,
+        ], 200);
     }
 }

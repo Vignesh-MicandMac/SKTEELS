@@ -37,8 +37,8 @@ class DealersController extends Controller
             'state' => 'required|exists:states,id',
             'district' => 'required|exists:districts,id',
             'area' => 'required|string|max:200',
-            'pincode' => 'required|digits:6',
-            'gst_no' => 'nullable|string|max:200',
+            'pincode' => 'required',
+            'gst_no' => 'required|string|max:200',
         ]);
 
         if ($validator->fails()) {
@@ -86,14 +86,14 @@ class DealersController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'mobile' => 'required|digits:10',
+            'mobile' => 'required|digits:10|unique:dealers,mobile',
             'address' => 'required|string|max:255',
             'password' => 'required|min:6|confirmed',
             'state' => 'required|integer',
             'district' => 'required|integer',
             'area' => 'required|string',
-            'pincode' => 'required|digits:6',
-            'gst_no' => 'nullable|string|max:50',
+            'pincode' => 'required',
+            'gst_no' => 'required|string|max:50',
         ]);
 
         if ($validator->fails()) {

@@ -38,7 +38,7 @@ class PromotorTypeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Something went wrong')->withErrors($validator)->withInput();
+            return redirect()->back()->with('warning', $validator->errors()->first())->withErrors($validator)->withInput();
         }
 
         PromotorType::create($request->only('promotor_type'));
@@ -74,7 +74,7 @@ class PromotorTypeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->with('warning', 'Please fill the required fields')->withErrors($validator)->withInput();
+            return redirect()->back()->with('warning', $validator->errors()->first())->withErrors($validator)->withInput();
         }
 
         $role = PromotorType::findOrFail($id);

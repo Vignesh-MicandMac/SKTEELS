@@ -57,7 +57,7 @@
                             <select name="state" id="state-select" class="form-control">
                                 <option value="">Select State</option>
                                 @foreach($states as $state)
-                                <option value="{{ $state->id }}" {{ old('state_id') == $state->id ? 'selected' : '' }}>{{ $state->state_name }}</option>
+                                <option value="{{ $state->id }}" {{ old('state') == $state->id ? 'selected' : '' }}>{{ $state->state_name }}</option>
                                 @endforeach
                             </select>
                             @error('state') <div class="text-danger mt-1 small">{{ $message }}</div> @enderror

@@ -44,6 +44,9 @@ Route::post('/add-promotors', [DealerController::class, 'add_promotors']);
 Route::post('/site-entry', [DealerController::class, 'site_entry']);
 Route::get('/available-stocks', [DealerController::class, 'dealer_available_stocks']);
 Route::post('/sale-entry', [DealerController::class, 'sale_entry']);
+Route::get('/dealer-sale-entries', [DealerController::class, 'dealer_sale_entries']);
+Route::get('/executive-sale-entries', [DealerController::class, 'executive_sale_entries']);
+
 
 //Executives
 Route::get('/executives-list', [ExecutivesController::class, 'index']);

@@ -303,7 +303,8 @@ class RedeemController extends Controller
         //request dealer id , executive id , promotor id , product id
         $validator = Validator::make($request->all(), [
             'promotor_id' => 'required|exists:promotors,id',
-            'dealer_id' => 'required|exists:dealers,id',
+            'dealer_id' => 'nullable|exists:dealers,id',
+            'executive_id' => 'nullable|exists:executives,id',
             'product_id' => 'required|exists:products,id',
             'otp' => 'required|digits:6',
         ]);

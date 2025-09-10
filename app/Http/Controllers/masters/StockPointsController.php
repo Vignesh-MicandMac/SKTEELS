@@ -32,7 +32,7 @@ class StockPointsController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'kg' => 'required|numeric',
+            'kg' => 'required|numeric|unique:stocks_points,kg',
             'points'  => 'required|numeric',
         ], [
             'kg.numeric' => 'Kg should be in numeric',
@@ -70,7 +70,7 @@ class StockPointsController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'kg' => 'required|numeric',
+            'kg' => 'required|numeric|unique:stocks_points,kg',
             'points'  => 'required|numeric',
         ], [
             'kg.numeric' => 'Kg should be in numeric',
