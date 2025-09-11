@@ -116,7 +116,7 @@
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
+{{-- <script>
     $(document).ready(function() {
 
         $('#state-select').on('change', function() {
@@ -156,5 +156,71 @@
             $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
         }
     });
+</script> --}}
+
+<script>
+    $(document).ready(function() {
+        let oldState = "{{ old('state') }}";
+        let oldDistrict = "{{ old('district') }}";
+        let oldPincode = "{{ old('pincode') }}";
+console.log(oldState);
+console.log(oldDistrict);
+console.log(oldPincode);
+        // Load districts when state changes
+        $('#state-select').on('change', function() {
+            let stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    url: '/masters/dealers/get-districts/' + stateId,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#district-select').empty().append('<option value="">Select District</option>');
+                        $.each(data, function(key, value) {
+                            $('#district-select').append('<option value="' + value.id + '">' + value.district_name + '</option>');
+                        });
+
+                        // Set old district value if exists
+                        if (oldDistrict) {
+                            $('#district-select').val(oldDistrict).trigger('change');
+                            oldDistrict = ''; // clear after setting
+                        }
+                    }
+                });
+            } else {
+                $('#district-select').empty().append('<option value="">Select District</option>');
+            }
+        });
+
+        // Load pincodes when district changes
+        $('#district-select').on('change', function() {
+            let districtId = $(this).val();
+            if (districtId) {
+                $.ajax({
+                    url: '/masters/dealers/get-pincodes/' + districtId,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
+                        $.each(data, function(key, value) {
+                            $('#pincode-select').append('<option value="' + value.id + '">' + value.pincode + '</option>');
+                        });
+
+                        // Set old pincode value if exists
+                        if (oldPincode) {
+                            $('#pincode-select').val(oldPincode);
+                            oldPincode = ''; // clear after setting
+                        }
+                    }
+                });
+            } else {
+                $('#pincode-select').empty().append('<option value="">Select Pincode</option>');
+            }
+        });
+
+        // Trigger initial loading if state already selected
+        if (oldState) {
+            $('#state-select').val(oldState).trigger('change');
+        }
+    });
 </script>
+
 @endpush
